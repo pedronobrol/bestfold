@@ -6,6 +6,3 @@ node_modules/
 dist/
 public/island-worker.js
 results/*.tmp
-results/v1/
-results/v2/
-results/interim/

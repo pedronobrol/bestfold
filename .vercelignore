@@ -1,5 +1,2 @@
-results/v1
-results/v2
-results/interim
 dist
 .env*.local
