@@ -1,0 +1,6 @@
+/* Base reset (the viewer's own styles live in viewer/styles.css, shared with the single-file build). */
+@import '../viewer/styles.css';
+html { color-scheme: light dark; }
+body { margin: 0; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }

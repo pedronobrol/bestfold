@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Betterfold Throw Log</title>
+<meta name="description" content="Offline logger for Betterfold paper-plane validation throws: log, measure launch from video frames, summarise and compare with predictions.">
+<style>
+:root {
+  --bg: #f6f5f1; --surface: #ffffff; --surface-2: #efede7; --text: #1d1d1b; --muted: #66645e;
+  --border: #d9d6cd; --accent: #1f5fbf; --accent-text: #ffffff; --good: #1e7a46; --bad: #b3261e; --warn: #8a5a00;
+  --focus: #1f5fbf;
+  --c-glide: #2f7d5b; --c-dive: #b3261e; --c-stall: #c27c0e; --c-loop: #6b4fbb; --c-turn: #3b82b8; --c-other: #9a978e;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --surface: #1e1e1c; --surface-2: #2a2a27; --text: #ecebe6; --muted: #a3a199;
+    --border: #3a3a36; --accent: #7fb0ff; --accent-text: #0d1b33; --good: #5fcf8f; --bad: #ff8a80; --warn: #e8b85a;
+    --focus: #7fb0ff;
+    --c-glide: #5fbf93; --c-dive: #ff8a80; --c-stall: #e8b85a; --c-loop: #b3a1f0; --c-turn: #7fbbe6; --c-other: #77756e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --surface: #1e1e1c; --surface-2: #2a2a27; --text: #ecebe6; --muted: #a3a199;
+  --border: #3a3a36; --accent: #7fb0ff; --accent-text: #0d1b33; --good: #5fcf8f; --bad: #ff8a80; --warn: #e8b85a;
+  --focus: #7fb0ff;
+  --c-glide: #5fbf93; --c-dive: #ff8a80; --c-stall: #e8b85a; --c-loop: #b3a1f0; --c-turn: #7fbbe6; --c-other: #77756e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--border); }
+.bar { max-width: 760px; margin: 0 auto; padding: 10px 16px 0; }
+h1 { font-size: 1.05rem; margin: 0 0 8px; letter-spacing: .01em; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+h1 small { font-weight: 400; color: var(--muted); font-size: .85rem; }
+nav { display: flex; gap: 4px; overflow-x: auto; }
+nav button { flex: 1; border: 0; background: none; color: var(--muted); padding: 10px 8px; font: inherit; font-weight: 600; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+main { max-width: 760px; margin: 0 auto; padding: 16px 16px 96px; }
+section[hidden] { display: none; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.card h2 { font-size: .95rem; margin: 0 0 10px; }
+.card h2 .hint { font-weight: 400; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px 12px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.full { grid-column: 1 / -1; }
+label, .lbl { display: block; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea { width: 100%; font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; min-height: 42px; }
+textarea { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; min-height: 120px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+legend { padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface-2); cursor: pointer; font-size: .9rem; user-select: none; }
+.chip input:checked + span { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.btn { font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); padding: 10px 14px; min-height: 44px; cursor: pointer; }
+.btn.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn.danger { color: var(--bad); }
+.btn.small { min-height: 34px; padding: 6px 10px; font-size: .85rem; }
+.btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row.end { justify-content: flex-end; }
+.savebar { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--border); padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); z-index: 5; }
+.savebar .inner { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; }
+.savebar .primary { flex: 1; }
+.out { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; }
+.stat { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+.stat b { display: block; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .75rem; color: var(--muted); }
+.muted { color: var(--muted); font-size: .85rem; }
+.err { color: var(--bad); font-size: .85rem; }
+.table-wrap { overflow-x: auto; margin: 0 -14px; padding: 0 14px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 7px 6px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th:first-child, td:first-child, .loglist th:nth-child(2), .loglist td:nth-child(2) { text-align: left; }
+th { font-size: .75rem; color: var(--muted); font-weight: 600; }
+td.l { text-align: left; white-space: normal; }
+.mix { display: flex; height: 10px; border-radius: 5px; overflow: hidden; min-width: 80px; background: var(--surface-2); }
+.mix i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .78rem; color: var(--muted); margin-top: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.verdict { font-weight: 700; }
+.verdict.pass { color: var(--good); } .verdict.fail { color: var(--bad); }
+.toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 10; }
+.toast.show { opacity: 1; }
+.loglist td { font-size: .82rem; }
+details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 340px) { .grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media print { header nav, .savebar, .btn { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Betterfold throw log <small id="count">0 throws</small></h1>
+    <nav role="tablist" aria-label="Sections">
+      <button role="tab" id="t-log" aria-controls="p-log" aria-selected="true">Log</button>
+      <button role="tab" id="t-measure" aria-controls="p-measure" aria-selected="false">Measure</button>
+      <button role="tab" id="t-summary" aria-controls="p-summary" aria-selected="false">Summary</button>
+      <button role="tab" id="t-data" aria-controls="p-data" aria-selected="false">Data</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ============ LOG ============ -->
+<section id="p-log" role="tabpanel" aria-labelledby="t-log">
+  <details class="card" id="sessionCard">
+    <summary>Session &amp; conditions <span class="muted" id="sessionSummary"></span></summary>
+    <div class="grid" style="margin-top:12px">
+      <div><label for="s_session">Session ID</label><input id="s_session" placeholder="S1"></div>
+      <div><label for="s_thrower">Thrower</label><input id="s_thrower" placeholder="initials"></div>
+      <div><label for="s_mission">Mission</label>
+        <select id="s_mission"><option value="distance">Distance (~11 m/s)</option><option value="hangtime">Hang time (~15 m/s)</option><option value="glide">Trim glide</option></select></div>
+      <div><label for="s_venue">Venue</label><input id="s_venue" placeholder="gym / hallway"></div>
+      <div><label for="s_temp">Temp (°C)</label><input id="s_temp" type="number" inputmode="decimal" step="0.1"></div>
+      <div><label for="s_rh">Humidity (%RH)</label><input id="s_rh" type="number" inputmode="decimal" step="1"></div>
+      <div class="full"><label for="s_paper">Paper (brand, g/m², batch)</label><input id="s_paper" placeholder="e.g. Navigator 80 g/m², ream 1"></div>
+    </div>
+    <p class="muted">Saved with every throw. Re-read humidity every ~60 throws.</p>
+  </details>
+
+  <form class="card" id="logForm" novalidate>
+    <h2>New throw</h2>
+    <div class="grid three">
+      <div><label for="f_design">Design</label><input id="f_design" list="designList" autocomplete="off" placeholder="D1" required></div>
+      <div><label for="f_copy">Copy #</label><input id="f_copy" type="number" inputmode="numeric" min="1" step="1" value="1"></div>
+      <div><label for="f_kind">Type</label>
+        <select id="f_kind"><option value="score">Scored</option><option value="trim">Trim</option><option value="glide">Trim glide (L/D)</option></select></div>
+    </div>
+    <datalist id="designList"></datalist>
+    <div class="row" id="designQuick" style="margin:8px 0 2px" aria-label="Quick design select"></div>
+
+    <div class="grid three" style="margin-top:10px">
+      <div id="w_dist"><label for="f_dist">Distance (m)</label><input id="f_dist" type="number" inputmode="decimal" step="0.01" min="0"></div>
+      <div id="w_time"><label for="f_time">Time aloft (s)</label><input id="f_time" type="number" inputmode="decimal" step="0.01" min="0"></div>
+      <div id="w_ld" hidden><label for="f_ld">Glide ratio L/D</label><input id="f_ld" type="number" inputmode="decimal" step="0.01" min="0"></div>
+    </div>
+    <fieldset style="margin-top:12px">
+      <legend class="lbl">Launch <span style="font-weight:400">— optional, fill from the Measure tab</span></legend>
+      <div class="grid three">
+        <div><label for="f_speed">Speed (m/s)</label><input id="f_speed" type="number" inputmode="decimal" step="0.01" min="0"></div>
+        <div><label for="f_angle">Angle γ (°)</label><input id="f_angle" type="number" inputmode="decimal" step="0.1"></div>
+        <div><label for="f_alpha">Release α₀ (°)</label><input id="f_alpha" type="number" inputmode="decimal" step="0.1"></div>
+      </div>
+    </fieldset>
+
+    <fieldset style="margin-top:12px">
+      <legend class="lbl">Outcome</legend>
+      <div class="chips" id="outcomes"></div>
+    </fieldset>
+    <div style="margin-top:12px"><label for="f_notes">Notes</label><input id="f_notes" placeholder="lateral offset, stopwatch, damage…"></div>
+    <p class="err" id="formErr" role="alert"></p>
+  </form>
+  <div class="card">
+    <h2>Last throws</h2>
+    <div class="table-wrap"><table class="loglist" id="recent"><caption class="sr">Most recent throws</caption></table></div>
+  </div>
+</section>
+
+<!-- ============ MEASURE ============ -->
+<section id="p-measure" role="tabpanel" aria-labelledby="t-measure" hidden>
+  <div class="card">
+    <h2>Video calibration <span class="hint">side-on, reference in throw plane</span></h2>
+    <div class="grid">
+      <div><label for="m_fps">Frame rate (fps)</label><input id="m_fps" type="number" inputmode="decimal" value="240"></div>
+      <div><label for="m_refm">Reference length (m)</label><input id="m_refm" type="number" inputmode="decimal" step="0.001" value="1.000"></div>
+      <div><label for="m_refpx">Reference length (px)</label><input id="m_refpx" type="number" inputmode="decimal" step="0.1" placeholder="or endpoints below"></div>
+    </div>
+    <details style="margin-top:10px"><summary>Compute from reference endpoints</summary>
+      <div class="grid" style="margin-top:10px">
+        <div><label for="m_r1x">End A x</label><input id="m_r1x" type="number" inputmode="decimal"></div>
+        <div><label for="m_r1y">End A y</label><input id="m_r1y" type="number" inputmode="decimal"></div>
+        <div><label for="m_r2x">End B x</label><input id="m_r2x" type="number" inputmode="decimal"></div>
+        <div><label for="m_r2y">End B y</label><input id="m_r2y" type="number" inputmode="decimal"></div>
+      </div>
+    </details>
+    <p class="muted">Pixel y grows downward (as in most frame viewers); this tool flips it so up is positive.</p>
+  </div>
+
+  <div class="card">
+    <h2>Launch <span class="hint">release frame and 6–12 frames later</span></h2>
+    <div class="grid three">
+      <div><label for="m_f0">Release frame #</label><input id="m_f0" type="number" inputmode="numeric"></div>
+      <div><label for="m_n0x">Nose x</label><input id="m_n0x" type="number" inputmode="decimal"></div>
+      <div><label for="m_n0y">Nose y</label><input id="m_n0y" type="number" inputmode="decimal"></div>
+      <div><span class="lbl" aria-hidden="true">&nbsp;</span><p class="muted" style="margin:10px 0 0">Tail (for α₀, optional)</p></div>
+      <div><label for="m_t0x">Tail x</label><input id="m_t0x" type="number" inputmode="decimal"></div>
+      <div><label for="m_t0y">Tail y</label><input id="m_t0y" type="number" inputmode="decimal"></div>
+      <div><label for="m_f1">Later frame #</label><input id="m_f1" type="number" inputmode="numeric"></div>
+      <div><label for="m_n1x">Nose x</label><input id="m_n1x" type="number" inputmode="decimal"></div>
+      <div><label for="m_n1y">Nose y</label><input id="m_n1y" type="number" inputmode="decimal"></div>
+    </div>
+    <div class="out" id="launchOut" aria-live="polite"></div>
+    <p class="muted">Average velocity over the interval, with vertical speed corrected back to release by g·Δt/2. Drag over the interval is neglected (keep Δt ≤ 50 ms).</p>
+    <div class="row end"><button class="btn primary" type="button" id="useLaunch">Use in throw form</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Trim glide <span class="hint">two points on the steady segment</span></h2>
+    <div class="grid three">
+      <div><label for="g_f1">Frame # (P1)</label><input id="g_f1" type="number" inputmode="numeric"></div>
+      <div><label for="g_x1">P1 x</label><input id="g_x1" type="number" inputmode="decimal"></div>
+      <div><label for="g_y1">P1 y</label><input id="g_y1" type="number" inputmode="decimal"></div>
+      <div><label for="g_f2">Frame # (P2)</label><input id="g_f2" type="number" inputmode="numeric"></div>
+      <div><label for="g_x2">P2 x</label><input id="g_x2" type="number" inputmode="decimal"></div>
+      <div><label for="g_y2">P2 y</label><input id="g_y2" type="number" inputmode="decimal"></div>
+    </div>
+    <div class="out" id="glideOut" aria-live="polite"></div>
+    <div class="row end"><button class="btn primary" type="button" id="useGlide">Use as L/D</button></div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section id="p-summary" role="tabpanel" aria-labelledby="t-summary" hidden>
+  <div class="card">
+    <div class="grid two">
+      <div><label for="u_mission">Mission</label><select id="u_mission"><option value="distance">Distance</option><option value="hangtime">Hang time</option><option value="">All</option></select></div>
+      <div><label for="u_metric">Metric</label><select id="u_metric"><option value="distance">Distance (m)</option><option value="time">Time aloft (s)</option></select></div>
+    </div>
+    <p class="muted">Scored throws only; failures count. Trim and glide-test rows are excluded.</p>
+  </div>
+  <div class="card">
+    <h2>Per design</h2>
+    <div class="table-wrap"><table id="sumTable"><caption class="sr">Per-design medians and spread</caption></table></div>
+    <div class="legend" id="mixLegend"></div>
+  </div>
+  <div class="card">
+    <h2>Compare with predictions <span class="hint">paste after throwing, not before</span></h2>
+    <label for="predJson">Predictions JSON</label>
+    <textarea id="predJson" spellcheck="false" placeholder='{"mission":"distance","designs":{"D1":{"label":"Classic dart","distance":7.4,"time":1.7},"D2":{"label":"Betterfold champion","distance":12.1,"time":2.4}}}'></textarea>
+    <p class="err" id="predErr" role="alert"></p>
+    <div class="table-wrap"><table id="cmpTable"><caption class="sr">Predicted versus measured</caption></table></div>
+    <div id="cmpOut" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ DATA ============ -->
+<section id="p-data" role="tabpanel" aria-labelledby="t-data" hidden>
+  <div class="card">
+    <h2>Export CSV <span class="hint">for analyze.js</span></h2>
+    <label for="csvOut" class="sr">CSV export</label>
+    <textarea id="csvOut" readonly spellcheck="false" rows="8"></textarea>
+    <div class="row end" style="margin-top:8px">
+      <span class="muted" id="copyMsg" aria-live="polite"></span>
+      <button class="btn primary" type="button" id="copyCsv">Copy CSV</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Import CSV <span class="hint">merge another phone's log</span></h2>
+    <label for="csvIn" class="sr">CSV to import</label>
+    <textarea id="csvIn" spellcheck="false" rows="5" placeholder="Paste a CSV exported from this page"></textarea>
+    <div class="row end" style="margin-top:8px">
+      <span class="muted" id="importMsg" aria-live="polite"></span>
+      <button class="btn" type="button" id="importCsv">Append rows</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>All throws</h2>
+    <div class="table-wrap"><table class="loglist" id="allTable"><caption class="sr">All logged throws</caption></table></div>
+    <div class="row end" style="margin-top:12px"><button class="btn danger" type="button" id="clearAll">Delete all data…</button></div>
+    <p class="muted" id="storageMsg"></p>
+  </div>
+</section>
+</main>
+
+<div class="savebar" id="savebar">
+  <div class="inner">
+    <button class="btn" type="button" id="undo" aria-label="Undo last throw">Undo</button>
+    <button class="btn primary" type="submit" form="logForm" id="saveBtn">Save throw</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+  const KEY = 'betterfold-throwlog-v1', SKEY = 'betterfold-throwlog-session-v1', PKEY = 'betterfold-throwlog-pred-v1';
+  const COLS = ['id','session','timestamp','design','copy','thrower','mission','kind','throw_no','speed_ms','angle_deg','alpha_deg','distance_m','time_s','ld','outcome','notes','temp_c','rh_pct','paper','venue'];
+  const OUTCOMES = [
+    ['glide', 'Glide', '--c-glide'], ['nose-dive', 'Nose-dive', '--c-dive'], ['stall-recovery', 'Stall-recovery', '--c-stall'],
+    ['loop', 'Loop', '--c-loop'], ['turned', 'Turned', '--c-turn']];
+  const $ = (id) => document.getElementById(id);
+  const num = (v) => { const x = parseFloat(v); return Number.isFinite(x) ? x : null; };
+  const fmt = (v, d = 2) => (v === null || v === undefined || !Number.isFinite(v)) ? '—' : v.toFixed(d);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ---------- storage (always guarded) ----------
+  let storageOK = true;
+  const load = (k, dflt) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : dflt; } catch (e) { storageOK = false; return dflt; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { storageOK = false; return false; } };
+  let rows = load(KEY, []);
+  if (!Array.isArray(rows)) rows = [];
+  let session = load(SKEY, { session: 'S1', thrower: '', mission: 'distance', venue: '', temp: '', rh: '', paper: '' });
+  const persist = () => { if (!save(KEY, rows)) toast('Not saved to storage — export CSV now'); render(); };
+
+  // ---------- tabs ----------
+  const tabs = ['log', 'measure', 'summary', 'data'];
+  function showTab(name) {
+    tabs.forEach((t) => { $('t-' + t).setAttribute('aria-selected', String(t === name)); $('p-' + t).hidden = t !== name; });
+    $('savebar').hidden = name !== 'log';
+    if (name === 'summary') renderSummary();
+    if (name === 'data') renderData();
+  }
+  tabs.forEach((t, i) => {
+    const b = $('t-' + t);
+    b.addEventListener('click', () => showTab(t));
+    b.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        showTab(n); $('t-' + n).focus();
+      }
+    });
+  });
+
+  // ---------- session ----------
+  const sMap = { s_session: 'session', s_thrower: 'thrower', s_mission: 'mission', s_venue: 'venue', s_temp: 'temp', s_rh: 'rh', s_paper: 'paper' };
+  Object.entries(sMap).forEach(([id, k]) => {
+    $(id).value = session[k] ?? '';
+    $(id).addEventListener('input', () => { session[k] = $(id).value; save(SKEY, session); sessionSummary(); syncKind(); });
+  });
+  function sessionSummary() {
+    const bits = [session.session, session.thrower, session.mission, session.rh ? session.rh + '%RH' : ''].filter(Boolean);
+    $('sessionSummary').textContent = bits.length ? '· ' + bits.join(' · ') : '';
+  }
+  if (!session.thrower) $('sessionCard').open = true;
+
+  // ---------- form ----------
+  $('outcomes').innerHTML = OUTCOMES.map(([v, l, c], i) =>
+    `<label class="chip"><input type="radio" name="outcome" value="${v}"${i === 0 ? ' checked' : ''}><span><i class="dot" style="background:var(${c})" aria-hidden="true"></i>${l}</span></label>`).join('');
+  function syncKind() {
+    const k = $('f_kind').value;
+    $('w_ld').hidden = k !== 'glide';
+    $('w_dist').hidden = k === 'glide';
+    $('w_time').hidden = k === 'glide';
+  }
+  $('f_kind').addEventListener('change', syncKind);
+  if (session.mission === 'glide') $('f_kind').value = 'glide';
+  syncKind();
+
+  function nextThrowNo(design, copy, kind, mission) {
+    return rows.filter((r) => r.design === design && String(r.copy) === String(copy) && r.kind === kind && r.mission === mission).length + 1;
+  }
+  $('logForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const design = $('f_design').value.trim(), kind = $('f_kind').value;
+    const dist = num($('f_dist').value), time = num($('f_time').value), ld = num($('f_ld').value);
+    const err = !design ? 'Enter a design code.' :
+      kind === 'glide' ? (ld === null ? 'Enter the glide ratio (L/D).' : '') :
+      (dist === null && time === null ? 'Enter distance or time aloft.' : '');
+    $('formErr').textContent = err;
+    if (err) { (design ? (kind === 'glide' ? $('f_ld') : $('f_dist')) : $('f_design')).focus(); return; }
+    const copy = parseInt($('f_copy').value, 10) || 1;
+    const mission = kind === 'glide' ? 'glide' : (session.mission === 'glide' ? 'distance' : session.mission);
+    const id = rows.reduce((m, r) => Math.max(m, +r.id || 0), 0) + 1;
+    const row = {
+      id, session: session.session || '', timestamp: new Date().toISOString(), design, copy, thrower: session.thrower || '',
+      mission, kind, throw_no: nextThrowNo(design, copy, kind, mission),
+      speed_ms: $('f_speed').value, angle_deg: $('f_angle').value, alpha_deg: $('f_alpha').value,
+      distance_m: kind === 'glide' ? '' : $('f_dist').value, time_s: kind === 'glide' ? '' : $('f_time').value, ld: kind === 'glide' ? $('f_ld').value : '',
+      outcome: (document.querySelector('input[name="outcome"]:checked') || {}).value || '', notes: $('f_notes').value.trim(),
+      temp_c: session.temp || '', rh_pct: session.rh || '', paper: session.paper || '', venue: session.venue || '',
+    };
+    rows.push(row); persist();
+    ['f_dist', 'f_time', 'f_ld', 'f_speed', 'f_angle', 'f_alpha', 'f_notes'].forEach((i) => { $(i).value = ''; });
+    document.querySelector('input[name="outcome"][value="glide"]').checked = true;
+    toast(`Saved #${id}: ${design} copy ${copy}, ${kind} ${row.throw_no}`);
+    (kind === 'glide' ? $('f_ld') : $('f_dist')).focus();
+  });
+  $('undo').addEventListener('click', () => {
+    if (!rows.length) return;
+    const r = rows[rows.length - 1];
+    if (!confirm(`Delete throw #${r.id} (${r.design} copy ${r.copy})?`)) return;
+    rows.pop(); persist(); toast('Removed last throw');
+  });
+
+  // ---------- toast ----------
+  let tt;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 1800); }
+
+  // ---------- measure ----------
+  const MKEYS = ['m_fps', 'm_refm', 'm_refpx', 'm_r1x', 'm_r1y', 'm_r2x', 'm_r2y', 'm_f0', 'm_n0x', 'm_n0y', 'm_t0x', 'm_t0y', 'm_f1', 'm_n1x', 'm_n1y', 'g_f1', 'g_x1', 'g_y1', 'g_f2', 'g_x2', 'g_y2'];
+  const mstate = load('betterfold-throwlog-measure-v1', {});
+  MKEYS.forEach((k) => { if (mstate[k] !== undefined && mstate[k] !== '') $(k).value = mstate[k]; $(k).addEventListener('input', () => { mstate[k] = $(k).value; save('betterfold-throwlog-measure-v1', mstate); computeMeasure(); }); });
+  const v = (id) => num($(id).value);
+  function scale() { // metres per pixel
+    let px = v('m_refpx');
+    const [ax, ay, bx, by] = ['m_r1x', 'm_r1y', 'm_r2x', 'm_r2y'].map(v);
+    if ([ax, ay, bx, by].every((x) => x !== null)) { px = Math.hypot(bx - ax, by - ay); $('m_refpx').placeholder = px.toFixed(1) + ' (from endpoints)'; }
+    const m = v('m_refm');
+    return px && m ? m / px : null;
+  }
+  let launch = null, glide = null;
+  const statHTML = (items) => items.map(([val, lab]) => `<div class="stat"><b>${val}</b><span>${lab}</span></div>`).join('');
+  function computeMeasure() {
+    const s = scale(), fps = v('m_fps');
+    launch = null; glide = null;
+    // launch
+    const f0 = v('m_f0'), f1 = v('m_f1'), x0 = v('m_n0x'), y0 = v('m_n0y'), x1 = v('m_n1x'), y1 = v('m_n1y');
+    if (s && fps && [f0, f1, x0, y0, x1, y1].every((x) => x !== null) && f1 !== f0) {
+      const dt = (f1 - f0) / fps;
+      const vx = (x1 - x0) * s / dt, vzAvg = -(y1 - y0) * s / dt; // image y down → flip
+      const vz = vzAvg + 9.81 * dt / 2; // average velocity sits at mid-interval; gravity has removed g·Δt/2 since release
+      const speed = Math.hypot(vx, vz), gamma = Math.atan2(vz, Math.abs(vx)) * 180 / Math.PI;
+      let att = null, alpha = null;
+      const tx = v('m_t0x'), ty = v('m_t0y');
+      if (tx !== null && ty !== null && (tx !== x0 || ty !== y0)) {
+        const dir = Math.sign(vx) || 1; // allow throws to the left
+        att = Math.atan2(-(y0 - ty), dir * (x0 - tx)) * 180 / Math.PI;
+        alpha = att - gamma;
+      }
+      launch = { speed, gamma, att, alpha, dt };
+      $('launchOut').innerHTML = statHTML([[fmt(speed, 2), 'speed m/s'], [fmt(gamma, 1) + '°', 'path angle γ'], [att === null ? '—' : fmt(att, 1) + '°', 'pitch attitude'], [alpha === null ? '—' : fmt(alpha, 1) + '°', 'α₀ = θ − γ'], [fmt(dt * 1000, 0) + ' ms', 'Δt']]) +
+        (dt > 0.06 ? `<p class="err full" style="grid-column:1/-1">Δt is long; drag will bias speed low. Use fewer frames.</p>` : '');
+    } else $('launchOut').innerHTML = `<p class="muted" style="grid-column:1/-1">Enter fps, a reference, and both frames to compute.</p>`;
+    // glide
+    const g1 = v('g_f1'), g2 = v('g_f2'), gx1 = v('g_x1'), gy1 = v('g_y1'), gx2 = v('g_x2'), gy2 = v('g_y2');
+    if ([gx1, gy1, gx2, gy2].every((x) => x !== null)) {
+      const dx = Math.abs(gx2 - gx1), dy = (gy2 - gy1); // descent = +y in image
+      const ld = dy > 0 ? dx / dy : null;
+      const gt = (s && fps && g1 !== null && g2 !== null && g2 !== g1) ? Math.abs(g2 - g1) / fps : null;
+      const gv = gt ? Math.hypot(dx, dy) * s / gt : null;
+      glide = { ld, v: gv };
+      $('glideOut').innerHTML = statHTML([[ld === null ? '—' : fmt(ld, 2), 'L/D = Δx/Δh'], [gv === null ? '—' : fmt(gv, 2), 'glide speed m/s'], [ld === null ? '—' : fmt(Math.atan(1 / ld) * 180 / Math.PI, 1) + '°', 'glide angle']]) +
+        (dy <= 0 ? `<p class="err" style="grid-column:1/-1">P2 must be lower than P1 (larger y).</p>` : '');
+    } else $('glideOut').innerHTML = `<p class="muted" style="grid-column:1/-1">Pick two points well after release.</p>`;
+  }
+  $('useLaunch').addEventListener('click', () => {
+    if (!launch) { toast('Nothing computed yet'); return; }
+    $('f_speed').value = launch.speed.toFixed(2); $('f_angle').value = launch.gamma.toFixed(1);
+    if (launch.alpha !== null) $('f_alpha').value = launch.alpha.toFixed(1);
+    showTab('log'); toast('Launch copied to the form');
+  });
+  $('useGlide').addEventListener('click', () => {
+    if (!glide || glide.ld === null) { toast('Nothing computed yet'); return; }
+    $('f_kind').value = 'glide'; syncKind(); $('f_ld').value = glide.ld.toFixed(2);
+    showTab('log'); toast('L/D copied to the form');
+  });
+
+  // ---------- stats ----------
+  function quantile(xs, p) {
+    const a = xs.filter(Number.isFinite).sort((x, y) => x - y);
+    if (!a.length) return NaN;
+    const h = (a.length - 1) * p, lo = Math.floor(h);
+    return a[lo] + (a[Math.min(lo + 1, a.length - 1)] - a[lo]) * (h - lo);
+  }
+  function ranks(xs) {
+    const idx = xs.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]), r = new Array(xs.length);
+    for (let i = 0; i < idx.length;) { let j = i; while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++; for (let k = i; k <= j; k++) r[idx[k][1]] = (i + j) / 2 + 1; i = j + 1; }
+    return r;
+  }
+  function spearman(a, b) {
+    const ra = ranks(a), rb = ranks(b), n = a.length, ma = (n + 1) / 2;
+    let sab = 0, saa = 0, sbb = 0;
+    for (let i = 0; i < n; i++) { sab += (ra[i] - ma) * (rb[i] - ma); saa += (ra[i] - ma) ** 2; sbb += (rb[i] - ma) ** 2; }
+    return { rho: saa && sbb ? sab / Math.sqrt(saa * sbb) : NaN, ra, rb };
+  }
+  function perDesign() {
+    const mission = $('u_mission').value, metric = $('u_metric').value, col = metric === 'time' ? 'time_s' : 'distance_m';
+    const out = {};
+    for (const r of rows) {
+      if (r.kind !== 'score' || (mission && r.mission !== mission)) continue;
+      const x = num(r[col]); if (x === null) continue;
+      const d = (out[r.design] ??= { vals: [], copies: new Set(), oc: {}, speeds: [] });
+      d.vals.push(x); d.copies.add(String(r.copy)); d.oc[r.outcome] = (d.oc[r.outcome] || 0) + 1;
+      if (num(r.speed_ms) !== null) d.speeds.push(num(r.speed_ms));
+    }
+    for (const d of Object.values(out)) { d.median = quantile(d.vals, 0.5); d.q1 = quantile(d.vals, 0.25); d.q3 = quantile(d.vals, 0.75); }
+    return { out, metric };
+  }
+  const mixBar = (oc, n) => `<div class="mix" role="img" aria-label="${OUTCOMES.map(([k, l]) => oc[k] ? `${l} ${Math.round(100 * oc[k] / n)}%` : '').filter(Boolean).join(', ')}">` +
+    OUTCOMES.map(([k, , c]) => oc[k] ? `<i style="width:${100 * oc[k] / n}%;background:var(${c})"></i>` : '').join('') + '</div>';
+
+  function renderSummary() {
+    const { out, metric } = perDesign(), unit = metric === 'time' ? 's' : 'm';
+    const keys = Object.keys(out).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    $('sumTable').innerHTML = `<caption class="sr">Per-design medians and spread</caption><thead><tr><th scope="col">Design</th><th scope="col">n</th><th scope="col">Copies</th><th scope="col">Median ${unit}</th><th scope="col">IQR</th><th scope="col">v̄ m/s</th><th scope="col">Outcomes</th></tr></thead><tbody>` +
+      (keys.length ? keys.map((k) => { const d = out[k]; return `<tr><td>${esc(k)}</td><td>${d.vals.length}</td><td>${d.copies.size}</td><td><b>${fmt(d.median)}</b></td><td>${fmt(d.q1)}–${fmt(d.q3)}</td><td>${d.speeds.length ? fmt(quantile(d.speeds, 0.5), 1) : '—'}</td><td>${mixBar(d.oc, d.vals.length)}</td></tr>`; }).join('')
+        : `<tr><td colspan="7" class="l muted">No scored throws for this filter yet.</td></tr>`) + '</tbody>';
+    $('mixLegend').innerHTML = OUTCOMES.map(([, l, c]) => `<span><i class="dot" style="background:var(${c})" aria-hidden="true"></i>${l}</span>`).join('');
+    renderCompare(out, metric);
+  }
+
+  function renderCompare(out, metric) {
+    const txt = $('predJson').value.trim();
+    $('predErr').textContent = ''; $('cmpTable').innerHTML = ''; $('cmpOut').innerHTML = '';
+    if (!txt) return;
+    let pred;
+    try { pred = JSON.parse(txt); } catch (e) { $('predErr').textContent = 'Not valid JSON: ' + e.message; return; }
+    const pd = pred.designs || pred;
+    const keys = Object.keys(pd).filter((k) => out[k] && Number.isFinite(+pd[k][metric]))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    if (keys.length < 2) { $('predErr').textContent = `Need ≥ 2 designs with both measurements and a "${metric}" prediction.`; return; }
+    const P = keys.map((k) => +pd[k][metric]), M = keys.map((k) => out[k].median);
+    const { rho, ra, rb } = spearman(P, M);
+    const n = keys.length, d2 = keys.reduce((s, _, i) => s + (ra[i] - rb[i]) ** 2, 0);
+    const bias = Math.exp(keys.reduce((s, _, i) => s + Math.log(M[i] / P[i]), 0) / n);
+    // ranks displayed with 1 = best (largest)
+    const best = (r) => n + 1 - r;
+    $('cmpTable').innerHTML = `<caption class="sr">Predicted versus measured</caption><thead><tr><th scope="col">Design</th><th scope="col">Predicted</th><th scope="col">Measured</th><th scope="col">Ratio</th><th scope="col">Rank sim</th><th scope="col">Rank real</th></tr></thead><tbody>` +
+      keys.map((k, i) => `<tr><td class="l">${esc(k)}${pd[k].label ? ` <span class="muted">${esc(pd[k].label)}</span>` : ''}</td><td>${fmt(P[i])}</td><td>${fmt(M[i])}</td><td>${fmt(M[i] / P[i])}</td><td>${fmt(best(ra[i]), ra[i] % 1 ? 1 : 0)}</td><td>${fmt(best(rb[i]), rb[i] % 1 ? 1 : 0)}</td></tr>`).join('') + '</tbody>';
+    const pass = rho >= 0.7;
+    $('cmpOut').innerHTML = `<div class="out">${statHTML([
+      [`<span class="verdict ${pass ? 'pass' : 'fail'}">${fmt(rho, 2)}</span>`, `Spearman ρ · ${pass ? 'pass' : 'fail'} at 0.7`],
+      [fmt(d2, 1), 'Σd² of ranks'], [fmt(bias, 2), 'bias (geo-mean meas/pred)'], [String(n), 'designs compared']])}</div>
+      <p class="muted">${n < 5 ? 'Fewer than 5 designs: ρ is very coarse. ' : ''}Run <code>analyze.js</code> for the copy-grouped bootstrap CI and the drag refit.</p>`;
+  }
+  $('predJson').addEventListener('input', () => { save(PKEY, $('predJson').value); renderSummary(); });
+  $('predJson').value = load(PKEY, '') || '';
+  ['u_mission', 'u_metric'].forEach((id) => $(id).addEventListener('change', renderSummary));
+  $('u_mission').addEventListener('change', () => { $('u_metric').value = $('u_mission').value === 'hangtime' ? 'time' : 'distance'; renderSummary(); });
+
+  // ---------- CSV ----------
+  const csvEsc = (v) => { const s = String(v ?? ''); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const toCSV = () => [COLS.join(','), ...rows.map((r) => COLS.map((c) => csvEsc(r[c])).join(','))].join('\n') + '\n';
+  function parseCSV(text) {
+    const out = []; let row = [], f = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true; else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); f = ''; if (row.some((x) => x !== '')) out.push(row); row = []; }
+      else f += c;
+    }
+    row.push(f); if (row.some((x) => x !== '')) out.push(row);
+    if (!out.length) return [];
+    const head = out.shift().map((h) => h.trim());
+    return out.map((r) => Object.fromEntries(head.map((h, k) => [h, (r[k] ?? '').trim()])));
+  }
+  $('copyCsv').addEventListener('click', async () => {
+    const ta = $('csvOut'); ta.value = toCSV();
+    let ok = false;
+    try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(ta.value); ok = true; } } catch (e) { /* fall through */ }
+    if (!ok) { ta.focus(); ta.select(); try { ok = document.execCommand('copy'); } catch (e) { ok = false; } }
+    $('copyMsg').textContent = ok ? `Copied ${rows.length} rows` : 'Text selected — copy it manually';
+  });
+  $('importCsv').addEventListener('click', () => {
+    const got = parseCSV($('csvIn').value);
+    if (!got.length || !('design' in got[0])) { $('importMsg').textContent = 'No rows with a "design" column found.'; return; }
+    const seen = new Set(rows.map((r) => r.timestamp + '|' + r.design + '|' + r.copy + '|' + r.throw_no + '|' + r.kind));
+    let id = rows.reduce((m, r) => Math.max(m, +r.id || 0), 0), added = 0;
+    for (const r of got) {
+      const sig = r.timestamp + '|' + r.design + '|' + r.copy + '|' + r.throw_no + '|' + r.kind;
+      if (r.timestamp && seen.has(sig)) continue;
+      const row = Object.fromEntries(COLS.map((c) => [c, r[c] ?? '']));
+      row.id = ++id; row.kind = row.kind || 'score'; rows.push(row); seen.add(sig); added++;
+    }
+    persist(); $('csvIn').value = ''; $('importMsg').textContent = `Added ${added} rows (${got.length - added} duplicates skipped).`;
+  });
+  $('clearAll').addEventListener('click', () => {
+    if (!rows.length) return;
+    if (!confirm(`Delete all ${rows.length} throws from this device? Export the CSV first.`)) return;
+    if (!confirm('Really delete everything?')) return;
+    rows = []; persist(); toast('All data deleted');
+  });
+
+  // ---------- tables ----------
+  const rowHTML = (r, del) => {
+    const val = r.kind === 'glide' ? `L/D ${esc(r.ld)}` : [r.distance_m && esc(r.distance_m) + ' m', r.time_s && esc(r.time_s) + ' s'].filter(Boolean).join(' · ');
+    const oc = OUTCOMES.find(([k]) => k === r.outcome);
+    return `<tr><td>${esc(r.id)}</td><td>${esc(r.design)}·${esc(r.copy)}</td><td class="l">${esc(r.kind)} ${esc(r.throw_no)}</td><td>${val || '—'}</td><td>${r.speed_ms ? esc(r.speed_ms) : '—'}</td><td class="l">${oc ? `<i class="dot" style="background:var(${oc[2]})" aria-hidden="true"></i> ${oc[1]}` : esc(r.outcome)}</td>${del ? `<td><button class="btn small danger" type="button" data-del="${esc(r.id)}" aria-label="Delete throw ${esc(r.id)}">✕</button></td>` : ''}</tr>`;
+  };
+  const head = (del) => `<thead><tr><th scope="col">#</th><th scope="col">Design·copy</th><th scope="col" style="text-align:left">Type</th><th scope="col">Result</th><th scope="col">v m/s</th><th scope="col" style="text-align:left">Outcome</th>${del ? '<th scope="col"><span class="sr">Delete</span></th>' : ''}</tr></thead>`;
+  function renderData() {
+    $('csvOut').value = toCSV();
+    $('allTable').innerHTML = '<caption class="sr">All logged throws</caption>' + head(true) + '<tbody>' + (rows.length ? rows.slice().reverse().map((r) => rowHTML(r, true)).join('') : '<tr><td colspan="7" class="l muted">No throws yet.</td></tr>') + '</tbody>';
+    $('storageMsg').textContent = storageOK ? 'Stored on this device only (browser storage). Export regularly.' : 'Browser storage is unavailable here: data lives only until this tab closes. Export now.';
+  }
+  $('allTable').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    const id = b.getAttribute('data-del');
+    if (!confirm(`Delete throw #${id}?`)) return;
+    rows = rows.filter((r) => String(r.id) !== id); persist();
+  });
+  function render() {
+    const scored = rows.filter((r) => r.kind === 'score').length;
+    $('count').textContent = `${scored} scored · ${rows.length} total`;
+    const designs = [...new Set(rows.map((r) => r.design))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    const quick = [...new Set(['D1', 'D2', 'D3', 'D4', 'D5', 'D6', ...designs])].slice(0, 10);
+    $('designList').innerHTML = designs.map((d) => `<option value="${esc(d)}">`).join('');
+    $('designQuick').innerHTML = quick.map((d) => `<button type="button" class="btn small" data-design="${esc(d)}" aria-pressed="${$('f_design').value === d}">${esc(d)}</button>`).join('');
+    $('recent').innerHTML = '<caption class="sr">Most recent throws</caption>' + head(false) + '<tbody>' + (rows.length ? rows.slice(-5).reverse().map((r) => rowHTML(r, false)).join('') : '<tr><td colspan="6" class="l muted">Nothing logged yet.</td></tr>') + '</tbody>';
+    if (!$('p-summary').hidden) renderSummary();
+    if (!$('p-data').hidden) renderData();
+  }
+  $('designQuick').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-design]'); if (!b) return;
+    $('f_design').value = b.getAttribute('data-design');
+    $('designQuick').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  });
+  $('f_design').addEventListener('input', () => $('designQuick').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x.getAttribute('data-design') === $('f_design').value))));
+
+  // Sticky last design/copy for fast logging
+  if (rows.length) { const l = rows[rows.length - 1]; $('f_design').value = l.design; $('f_copy').value = l.copy; }
+  sessionSummary(); computeMeasure(); render();
+})();
+</script>
+</body>
+</html>
