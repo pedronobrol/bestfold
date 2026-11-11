@@ -1,4 +1,4 @@
-# Bestfold H-1: folding instructions
+# Lone Petrel IV: folding instructions
 
 One A4 sheet, portrait, folded by hand. Step diagrams: diagrams-hangtime.svg
 

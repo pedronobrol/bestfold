@@ -1,4 +1,4 @@
-# Bestfold D-1: folding instructions
+# Solar Quill III: folding instructions
 
 One A4 sheet, landscape, folded by hand. Step diagrams: diagrams-distance.svg
 

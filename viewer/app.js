@@ -236,6 +236,11 @@ function polar(ac) {
   }
   return rows;
 }
+// The current best design of a mission, by its generated name.
+function bestName(m) {
+  const g = m.R.best.genome;
+  return designName(g, m.key, decode(normalizeGenome(g), MISSIONS[m.key]).noseFolds.length);
+}
 const metricFor = (m, r) => (m.key === 'distance' ? r.distance : r.time);
 const unitOf = (m) => (m.key === 'distance' ? 'm' : 's');
 
@@ -245,7 +250,7 @@ let heroPaper = null;
 function renderHero(m) {
   $('#hero-loading').hidden = true;
   const d = m.design, c = m.champ, u = unitOf(m);
-  const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
+  const name = bestName(m);
   const what = m.key === 'distance' ? 'distance' : 'time aloft';
   $('#hero-title').textContent = name;
   $('#hero-lede').textContent = `Every design is folded by hand from one sheet of A4 and tested in simulation, and anyone can help the search from their browser. This is the current best for ${what}.`;
@@ -428,7 +433,7 @@ function setupLab(m) {
   for (const r of labState.runs) { lab.scene.remove(r.root); lab.scene.remove(r.trail); r.tipTrails.forEach((t) => lab.scene.remove(t.line)); }
   buildLabScene();
   labState.runs = [
-    { ...makeRun(m.champ.geom, m.champ.ac, () => THEME.valley), name: m.simName || (m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1'), dot: 'v', which: 'champ' },
+    { ...makeRun(m.champ.geom, m.champ.ac, () => THEME.valley), name: m.simName || bestName(m), dot: 'v', which: 'champ' },
     { ...makeRun(m.dart.geom, m.dart.ac, () => THEME.mountain), name: 'Classic dart', dot: 'm', which: 'dart' },
   ];
   const sel = $('#lab-scn');
@@ -547,7 +552,7 @@ document.querySelectorAll('.views button').forEach((b) => b.addEventListener('cl
   document.querySelectorAll('.views button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
 }));
 function renderScenarioTable(m) {
-  const u = unitOf(m), name = m.simName || (m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1');
+  const u = unitOf(m), name = m.simName || bestName(m);
   const cell = (r) => `${fmt(r.metric)} ${u}${r.end === 'tumbling' ? ' · tumbled' : ''}`;
   const rows = [`<tr><td>${NOMINAL.name}</td><td class="n">${cell(m.champ.nominal)}</td><td class="n">${cell(m.dart.nominal)}</td></tr>`,
     ...SCENARIOS.map((s, i) => `<tr><td>${s.name}</td><td class="n">${m.champ.results[i] ? cell(m.champ.results[i]) : '–'}</td><td class="n">${m.dart.results[i] ? cell(m.dart.results[i]) : '–'}</td></tr>`)].join('');
@@ -831,7 +836,7 @@ function setupFold(m) {
   F.crease = new THREE.LineSegments(new THREE.BufferGeometry(), cm);
   F.crease.renderOrder = 10;
   F.paper.group.add(F.crease);
-  $('#fold-title').textContent = `How to fold ${m.simName || (m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1')}`;
+  $('#fold-title').textContent = 'How to fold it';
   $('#fold-steps').innerHTML = m.instr.map((s, i) => `<li><button data-i="${i}"><span><span class="st">${s.title}</span><span class="sx">${s.text}</span></span></button></li>`).join('');
   document.querySelectorAll('#fold-steps button').forEach((b) => b.addEventListener('click', () => goStep(+b.dataset.i, true)));
   const sheet = m.design.sheet;
@@ -929,7 +934,7 @@ $('#f-prev').addEventListener('click', () => { F.autoplay = false; goStep(F.i - 
 $('#f-next').addEventListener('click', () => { F.autoplay = false; goStep(F.i + 1, true); });
 $('#f-play').addEventListener('click', () => { F.autoplay = true; goStep(F.i >= F.m.instr.length - 1 ? 0 : F.i, true); });
 function renderTemplate(m) {
-  const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
+  const name = m.simName || bestName(m);
   const diags = stepDiagrams(m.champ.geom, m.instr, { cgX: m.champ.ac.cg[0], colors: { paper: css('--sheet'), back: css('--sheet-back'), edge: css('--ink-3'), grip: css('--valley') } });
   $('#diagrams').innerHTML = diags.map((d) => `<figure class="diagram" style="margin:0"><figcaption class="dh"><b>${d.num}</b><span>${d.title}</span></figcaption><div class="dv">${d.svg.replace(/ width="[\d.]+mm" height="[\d.]+mm"/, '')}</div></figure>`).join('');
   m.templateSvg = diagramSheet(stepDiagrams(m.champ.geom, m.instr, { cgX: m.champ.ac.cg[0] }), name);
@@ -946,7 +951,7 @@ function drawPolar(m) {
   const A = m.polar, D = m.dartPolar;
   const maxY = Math.ceil(Math.max(...A.map((r) => r.LD), ...D.map((r) => r.LD)) + 0.5);
   const x = (a) => L + ((W - L - R) * (a + 2)) / 26, y = (v) => T + (Ht - T - B) * (1 - Math.max(0, v) / maxY);
-  const name = m.key === 'distance' ? 'D-1' : 'H-1';
+  const name = bestName(m);
   let s = `<svg viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Lift to drag ratio versus angle of attack">`;
   for (let v = 0; v <= maxY; v += 1) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--rule)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
   for (let a = 0; a <= 24; a += 4) s += `<text x="${x(a)}" y="${Ht - 8}" text-anchor="middle">${a}°</text>`;
@@ -960,7 +965,7 @@ function drawPolar(m) {
   }
   s += '</svg>';
   $('#polar-chart').innerHTML = s;
-  $('#polar-legend').innerHTML = `<span><span class="dot v"></span> Bestfold ${name}</span><span><span class="dot m"></span> Classic dart</span>`;
+  $('#polar-legend').innerHTML = `<span><span class="dot v"></span> ${name}</span><span><span class="dot m"></span> Classic dart</span>`;
 }
 
 // ---------------- mission switching ----------------
@@ -1040,6 +1045,16 @@ function ingest() {
   }
   renderBoard();
   migrate();
+  promoteBest();
+}
+// If a verified contribution beats the shipped best for the mission on screen, it becomes the
+// best plane everywhere (landing page included).
+function promoteBest() {
+  const mk = missionKey(), R = DATA.missions[mk], top = boardRows()[0];
+  if (!R || !top || top.score <= R.best.score + 1e-6) return;
+  R.best = { genome: top.genome, score: top.score, key: sketchKey(fromGenome(top.genome).sketch), design: decode(normalizeGenome(top.genome), MISSIONS[mk]) };
+  cache.delete(mk);
+  show(mk);
 }
 function onVerified({ id, fitness }) {
   const p = T.pending.get(id);
@@ -1048,7 +1063,7 @@ function onVerified({ id, fitness }) {
   const ok = Math.abs(fitness - p.claim) <= Math.max(0.05, 0.03 * Math.abs(p.claim));
   T.verified.set(id, { genome: p.genome, score: fitness, claim: p.claim, ok, owners: new Set([p.owner]), at: p.at, by: 'device' });
   renderBoard();
-  if (ok) migrate();
+  if (ok) { migrate(); promoteBest(); }
 }
 function boardRows() {
   const mk = missionKey();
@@ -1194,7 +1209,7 @@ function designRow(item, rank) {
   row.querySelector('.nm').textContent = item.name;
   const R = DATA.missions[item.mission];
   const champ = R && R.best && gkey(R.best.genome) === gkey(item.genome);
-  row.querySelector('.meta').textContent = (champ ? `Current best (${item.mission === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1'}) · ` : '') + describe(item.specs);
+  row.querySelector('.meta').textContent = (champ ? 'Current best · ' : '') + describe(item.specs);
   const head = row.querySelector('button'), dl = row.querySelector('dl');
   const k = gkey(item.genome);
   const toggle = (open) => {
@@ -1260,24 +1275,110 @@ document.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('c
 // One selected design drives Flight, Wind tunnel and the folding tutorial (default: #1, the
 // current champion). The overview always shows the champion.
 const SIM = { items: [], idx: 0 };
+const silCache = new Map();
+// Small top view of a design (nose to the right), for the switch and its list.
+function topView(genome) {
+  const k = missionKey() + gkey(genome);
+  if (silCache.has(k)) return silCache.get(k);
+  let svg = '<svg viewBox="0 0 10 10"></svg>';
+  const geom = foldPlane(decode(normalizeGenome(genome), MISSIONS[missionKey()]));
+  if (geom.ok) {
+    const P = facets3D(geom).map((f) => f.pts.map((p) => [p[0], -p[1]]));
+    const all = P.flat(), xs = all.map((p) => p[0]), ys = all.map((p) => p[1]);
+    const x0 = Math.min(...xs), y0 = Math.min(...ys), w = Math.max(...xs) - x0, h = Math.max(...ys) - y0, pad = 0.008;
+    svg = `<svg viewBox="${x0 - pad} ${y0 - pad} ${w + 2 * pad} ${h + 2 * pad}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g>${P.map((q) => `<polygon points="${q.map((p) => p.map((v) => v.toFixed(4)).join(',')).join(' ')}"/>`).join('')}</g></svg>`;
+  }
+  silCache.set(k, svg);
+  return svg;
+}
 function fillSimPicker() {
-  const mk = missionKey(), u = mk === 'distance' ? 'm' : 's';
   SIM.items = allItems().sort((a, b) => b.score - a.score).slice(0, 50);
   SIM.idx = 0;
-  const champ = mk === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
-  const html = SIM.items.map((it, i) => `<option value="${i}">${i + 1}. ${it.name}${i === 0 ? ` (${champ})` : ''} · ${fmt(it.score, 2)} ${u}</option>`).join('');
-  for (const sel of document.querySelectorAll('.sim-pick')) { sel.innerHTML = html; sel.value = '0'; }
+  renderSwitches();
 }
+function switchLabel(it, i) {
+  const u = it.mission === 'distance' ? 'm' : 's';
+  const champ = i === 0 ? ' · current best' : '';
+  return `<span class="sil">${topView(it.genome)}</span><span class="txt"><span class="nm"></span><span class="meta">#${i + 1}${champ} · ${fmt(it.score, 2)} ${u}</span></span>`;
+}
+function renderSwitches() {
+  const it = SIM.items[SIM.idx];
+  if (!it) return;
+  for (const box of document.querySelectorAll('.dswitch')) {
+    box.innerHTML = `<button class="dsw" aria-haspopup="listbox" aria-expanded="false">${switchLabel(it, SIM.idx)}<span class="chev" aria-hidden="true"></span></button>`;
+    box.querySelector('.nm').textContent = it.name;
+    box.querySelector('button').addEventListener('click', (e) => { e.stopPropagation(); togglePopover(box); });
+  }
+}
+// The list of designs: one popover, opened under whichever switch was clicked.
+let pop = null;
+function closePopover() {
+  if (!pop) return;
+  pop.box.querySelector('button').setAttribute('aria-expanded', 'false');
+  pop.el.remove();
+  pop = null;
+}
+function togglePopover(box) {
+  if (pop && pop.box === box) return closePopover();
+  closePopover();
+  const el = document.createElement('div');
+  el.className = 'dpop';
+  el.innerHTML = `<input type="search" placeholder="Search designs" aria-label="Search designs" autocomplete="off"><ul role="listbox"></ul><a class="more-link" href="#designs">Browse all designs</a>`;
+  box.appendChild(el);
+  box.querySelector('button').setAttribute('aria-expanded', 'true');
+  pop = { el, box, active: SIM.idx };
+  const input = el.querySelector('input'), ul = el.querySelector('ul');
+  const draw = () => {
+    const q = input.value.trim().toLowerCase();
+    const list = SIM.items.map((it, i) => [it, i]).filter(([it]) => !q || it.name.toLowerCase().includes(q));
+    ul.innerHTML = list.length ? '' : '<li class="none">No designs match.</li>';
+    for (const [it, i] of list) {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.dataset.i = i;
+      if (i === SIM.idx) li.setAttribute('aria-selected', 'true');
+      li.innerHTML = switchLabel(it, i);
+      li.querySelector('.nm').textContent = it.name;
+      li.querySelector('.meta').textContent += ` · ${describe(it.specs)}`;
+      li.addEventListener('click', () => { closePopover(); pickSim(i); });
+      ul.appendChild(li);
+    }
+    const first = ul.querySelector('li[data-i]');
+    pop.active = first ? +first.dataset.i : -1;
+    mark();
+  };
+  const mark = () => { for (const li of ul.querySelectorAll('li[data-i]')) li.classList.toggle('active', +li.dataset.i === pop.active); };
+  input.addEventListener('input', draw);
+  input.addEventListener('keydown', (e) => {
+    const ids = [...ul.querySelectorAll('li[data-i]')].map((li) => +li.dataset.i);
+    const at = ids.indexOf(pop.active);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      pop.active = ids[Math.max(0, Math.min(ids.length - 1, at + (e.key === 'ArrowDown' ? 1 : -1)))];
+      mark();
+      ul.querySelector('li.active')?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && pop.active >= 0) { const i = pop.active; closePopover(); pickSim(i); }
+    else if (e.key === 'Escape') { closePopover(); box.querySelector('button').focus(); }
+  });
+  el.addEventListener('click', (e) => e.stopPropagation());
+  el.querySelector('.more-link').addEventListener('click', closePopover);
+  draw();
+  pop.active = SIM.idx;
+  mark();
+  ul.querySelector('li.active')?.scrollIntoView({ block: 'nearest' });
+  if (matchMedia('(pointer: fine)').matches) input.focus();
+}
+document.addEventListener('click', closePopover);
 function selectDesign(genome) {
   if (!current) return;
   if (!SIM.items.length || SIM.items[0].mission !== missionKey()) fillSimPicker();
   let i = SIM.items.findIndex((it) => gkey(it.genome) === gkey(genome));
-  if (i < 0) { SIM.items.push(catalogItem({ genome, score: 0, source: 'search' })); i = SIM.items.length - 1; for (const sel of document.querySelectorAll('.sim-pick')) sel.insertAdjacentHTML('beforeend', `<option value="${i}">${SIM.items[i].name}</option>`); }
+  if (i < 0) { SIM.items.push(catalogItem({ genome, score: 0, source: 'search' })); i = SIM.items.length - 1; }
   pickSim(i);
 }
 function pickSim(i) {
   SIM.idx = i;
-  for (const sel of document.querySelectorAll('.sim-pick')) sel.value = String(i);
+  renderSwitches();
   const m = current;
   if (i === 0 || !SIM.items[i]) { setupLab(m); setupTunnel(m); setupFold(m); return; }
   const it = SIM.items[i];
@@ -1292,7 +1393,6 @@ function pickSim(i) {
     setupFold(m2);
   }, 30);
 }
-for (const sel of document.querySelectorAll('.sim-pick')) sel.addEventListener('change', () => pickSim(+sel.value));
 document.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('click', () => setTimeout(fillSimPicker, 80)));
 
 // ---------------- views ----------------
