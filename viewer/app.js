@@ -259,6 +259,7 @@ function renderHero(m) {
     ['Folding steps', String(m.instr.length - 1)], ['Sheet', d.landscape ? 'A4 landscape' : 'A4 portrait'],
   ];
   $('#hero-figs').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('#hero-more').textContent = `See all ${(m.R.archive || []).length} designs`;
   if (heroPaper) hero.scene.remove(heroPaper.group);
   heroPaper = new Paper(c.geom);
   heroPaper.set(flightPoints(heroPaper, c.ac.cg));
@@ -1051,19 +1052,8 @@ function boardRows() {
   const mk = missionKey();
   return [...T.verified.entries()].filter(([k, v]) => k.startsWith(mk + '|') && v.ok).map(([, v]) => v).sort((a, b) => b.score - a.score).slice(0, 10);
 }
-async function renderBoard() {
-  const rows = boardRows();
-  const names = rows.length ? await community.names([...new Set(rows.flatMap((r) => [...r.owners]))]) : {};
-  const box = $('#t-board');
-  if (!rows.length) {
-    box.innerHTML = `<p class="empty">${T.pending.size ? `Checking ${T.pending.size} shared design${T.pending.size > 1 ? 's' : ''}…` : 'No contributions yet. Start contributing to post the first one.'}</p>`;
-    return;
-  }
-  box.innerHTML = '';
-  rows.slice(0, 5).forEach((r, i) => box.appendChild(designRow(catalogItem({
-    genome: r.genome, score: r.score, source: 'community', at: r.at,
-    owner: [...r.owners].map((id) => names[id] || (id === community.me ? 'You' : 'Someone')).join(', '),
-  }), i + 1)));
+// Contributions show up in the Designs catalog; refresh it when the board changes.
+function renderBoard() {
   if (shown === 'designs') renderDesigns();
 }
 function migrate() {
@@ -1280,7 +1270,7 @@ document.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('c
 // address and the back button works. Switching lands at the top of the view instantly.
 const views = [...document.querySelectorAll('.view')];
 const navLinks = [...document.querySelectorAll('header.site nav a')];
-const titles = { ...Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').slice(1), a.textContent])), designs: 'All designs' };
+const titles = { designs: 'Designs', lab: 'Flight', tunnel: 'Wind tunnel', fold: 'Fold it', hood: 'How it works', evolution: 'Search history' };
 var shown = null; // var: read by board rendering before the router runs
 function route() {
   const id = location.hash.slice(1);
@@ -1290,7 +1280,11 @@ function route() {
   if (target === shown) return;
   shown = target;
   for (const v of views) v.classList.toggle('active', v.dataset.view === target);
-  const navTarget = target === 'designs' ? 'together' : target; // All designs lives under Contribute
+  // pages grouped under one nav item: Simulate (flight, wind tunnel), How it works (method, search history)
+  const navTarget = { tunnel: 'lab', evolution: 'hood' }[target] || target;
+  for (const a of document.querySelectorAll('.subtabs a')) {
+    if (a.dataset.sub === target) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  }
   for (const a of navLinks) {
     if (a.getAttribute('href') === '#' + navTarget) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
