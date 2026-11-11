@@ -1,6 +1,6 @@
 <header class="site"><div class="wrap bar">
   <a class="name" href="#overview"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M31 16 1 4 7 16Z"/><path d="M31 16 7 16 1 28Z" opacity=".45"/></svg>Bestfold</a>
-  <nav aria-label="Views"><a href="#overview">Overview</a><a href="#lab">Flight</a><a href="#tunnel">Wind tunnel</a><a href="#evolution">Search</a><a href="#fold">Fold it</a><a href="#together">Contribute</a><a href="#hood">Method</a></nav>
+  <nav aria-label="Views"><a href="#designs">Designs</a><a href="#lab">Simulate</a><a href="#fold">Fold it</a><a href="#hood">How it works</a></nav>
   <div class="tabs" role="group" aria-label="Mission">
     <button id="m-distance" aria-pressed="true" data-mission="distance">Distance</button>
     <button id="m-hangtime" aria-pressed="false" data-mission="hangtime">Time aloft</button>
@@ -21,6 +21,7 @@
       <p class="compare" id="hero-compare"></p>
       <dl class="facts" id="hero-figs"></dl>
       <div class="actions"><a class="btn" href="#fold">How to fold it</a><a class="btn quiet" href="#lab">Watch it fly</a></div>
+      <a class="more-link" href="#designs" id="hero-more">See all designs</a>
     </div>
     <figure class="fig-hero">
       <div class="stage" id="hero-stage"><div class="loading" id="hero-loading">Folding the sheet…</div></div>
@@ -30,6 +31,7 @@
 </div></section>
 
 <section class="view" data-view="lab"><div class="wrap">
+  <div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div>
   <h2>Flight simulation</h2>
   <p class="sec-lede">Both planes are thrown with the same speed and angle and simulated live in your browser. Pick one of the 16 test throws or set your own.</p>
   <div class="lab">
@@ -55,6 +57,7 @@
 </div></section>
 
 <section class="view" data-view="tunnel"><div class="wrap">
+  <div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div>
   <h2>Wind tunnel</h2>
   <p class="sec-lede">The plane is held still in a stream of air. The smoke moves with the air as the simulator computes it, including the swirl around each vortex panel. You can see the air pushed down behind the wing and the vortices trailing from the tips. Past the stall, the flow over the wing breaks up.</p>
   <div class="lab">
@@ -77,6 +80,7 @@
 </div></section>
 
 <section class="view" data-view="evolution"><div class="wrap">
+  <div class="subtabs" role="tablist" aria-label="How it works"><a href="#hood" data-sub="hood">Method</a><a href="#evolution" data-sub="evolution">Search history</a></div>
   <h2>The search</h2>
   <p class="sec-lede" id="evo-lede"></p>
   <div class="evo">
@@ -111,10 +115,12 @@
   <div class="diagrams" id="diagrams"></div>
 </div></section>
 
-<section class="view" data-view="together"><div class="wrap">
-  <h2>Contribute</h2>
-  <p class="sec-lede">You can help the search by leaving this page open. Your browser runs its own copy of the optimiser in the background and sends any improvement to a shared board. The server re-runs the simulation for every submitted design before it is listed.</p>
-  <div class="together">
+
+<section class="view" data-view="designs"><div class="wrap">
+  <h2>Designs</h2>
+  <p class="sec-lede" id="d-lede">The best plane of every type found by the search and by contributors.</p>
+  <div class="help">
+    <div class="help-text"><h3>Help the search</h3><p>Leave this page open and your browser runs its own copy of the optimiser in the background. Every improvement it finds is re-simulated by the server and added here.</p></div>
     <div class="panel">
       <p class="tstat" id="t-live">Connecting…</p>
       <div class="ctl"><label for="t-threads">Processor use</label><select id="t-threads"><option value="1">Light (1 thread)</option><option value="2">Medium (2 threads)</option><option value="4">Heavy (4 threads)</option></select></div>
@@ -122,17 +128,7 @@
       <div class="readout" id="t-mine"><div class="ro-row"><span></span><span>This browser</span><b></b><b>idle</b></div></div>
       <p class="note" id="t-note">It runs while this tab is open, and you can stop it at any time. Results count for the mission selected above.</p>
     </div>
-    <div class="board">
-      <div class="list-head"><h3>Found by contributors</h3><a class="seeall" href="#designs" id="t-seeall">See all designs</a></div>
-      <div class="dlist" id="t-board"><p class="empty">No contributions yet. Start contributing to post the first one.</p></div>
-    </div>
   </div>
-</div></section>
-
-<section class="view" data-view="designs"><div class="wrap">
-  <a class="back" href="#together">Contribute</a>
-  <h2>All designs</h2>
-  <p class="sec-lede" id="d-lede">The best plane of every type found by the search and by contributors.</p>
   <div class="filters">
     <input type="search" id="d-q" placeholder="Search by name" aria-label="Search by name" autocomplete="off">
     <select id="d-sheet" aria-label="Sheet"><option value="">Any sheet</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
@@ -147,6 +143,7 @@
 </div></section>
 
 <section class="view" data-view="hood"><div class="wrap">
+  <div class="subtabs" role="tablist" aria-label="How it works"><a href="#hood" data-sub="hood">Method</a><a href="#evolution" data-sub="evolution">Search history</a></div>
   <h2>Method</h2>
   <div class="hood">
     <div class="prose">
