@@ -1,5 +1,7 @@
 # <img src="public/logo.svg" width="36" alt="" align="top"> Bestfold
 
+**[bestfold.org](https://bestfold.org)**: watch the planes fly, learn to fold them, and help the search from your browser.
+
 Bestfold is an attempt to design the best paper plane in the world by simulation. Every design is folded by hand from a single sheet of A4 paper, and only folded: nothing is cut, taped or glued, so the folds have to hold the plane together.
 
 It takes an A4 sheet of 80 g/m² paper, folds it in a geometric fold engine, computes mass and aerodynamics from the folded layers, and flies the result in a six-degree-of-freedom simulator through 16 randomised throws. Designs that could not be folded or would not fly sensibly are rejected outright. The best design becomes a folding tutorial with measured step diagrams. The search runs offline, and also in visitors' browsers: anyone can leave the site open to help, and the server re-simulates every design they submit before accepting it.
