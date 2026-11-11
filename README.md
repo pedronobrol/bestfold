@@ -4,7 +4,7 @@ Bestfold is an attempt to design the best paper plane in the world, by simulatio
 
 It takes an A4 sheet of 80 g/m² paper, folds it in a geometric fold engine, computes mass and aerodynamics from the folded layers, and flies the result in a six-degree-of-freedom simulator through 16 randomised throws. Designs that could not be folded or would not fly sensibly are rejected outright. The best design becomes a folding tutorial with measured step diagrams. The search runs offline, and also in visitors' browsers: anyone can leave the site open to help, and the server re-simulates every design they submit before accepting it.
 
-This repository started five years ago as **Aviato**, a small Python experiment that generated random crease patterns and plotted them (it is kept in [`legacy/`](legacy/)). I never had the time to finish it. In 2026 I picked it up again with Claude and finally built what I had in mind: a real fold engine, a physics model checked against wind-tunnel data, a robust search, and a way for anyone to contribute.
+This repository started five years ago as **Aviato**, a small Python experiment that generated random crease patterns and plotted them (still in the git history). I never had the time to finish it. In 2026 I picked it up again with Claude and finally built what I had in mind: a real fold engine, a physics model checked against wind-tunnel data, a robust search, and a way for anyone to contribute.
 
 <!-- RESULTS -->
 
@@ -318,7 +318,6 @@ The single-file build (`dist/bestfold.html`) runs without a server: as a claude.
 | `validation/` | Real-throw tooling: `throw-log.html` (offline phone logger and video-frame helper), `analyze.js` (ranking statistics and refit), `test/` (synthetic data that exercises the analysis) |
 | `docs/` | `PLAN.md` (v2 engineering plan and status), `VALIDATION.md` (throw protocol) |
 | `reports/`, `research_notes/` | Literature review behind the v2 design, and the two independent design reviews (`research_notes/.../reviews/`) |
-| `legacy/` | The original Python prototype |
 | `dist/` | `bestfold.html`, the single-file build (`npm run build:artifact`), used for the claude.ai artifact; not committed |
 
 ## Validation
@@ -337,7 +336,7 @@ Tooling:
 
 ## Credits
 
-Bestfold grew out of **Aviato**, a project I started in late 2021 and never finished. The original prototype generated random crease patterns and plotted them in 2D and 3D; it is preserved in `legacy/`.
+Bestfold grew out of **Aviato**, a project I started in late 2021 and never finished. The original prototype generated random crease patterns and plotted them in 2D and 3D; it lives on in the early commits of this repository.
 
 Version 2, Bestfold, was built in 2026 with Claude (Anthropic) as a coding and research partner. Its design came from three inputs:
 
