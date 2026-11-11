@@ -174,12 +174,32 @@ table.sc tr:last-child td { border-bottom: 0; font-weight: 600; }
 .board button { border: 1px solid var(--rule); background: var(--paper); border-radius: 6px; padding: 3px 10px; font-size: 12px; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; z-index: 20; }
 
-/* Simulate: sub-page toggle and design picker */
-.simbar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-.simbar .subtabs { margin-bottom: 0; }
-.pick { display: flex; gap: 10px; align-items: center; font-size: 0.88rem; color: var(--ink-2); min-width: 0; }
-.pick select { min-width: 0; max-width: 340px; }
-@media (max-width: 600px) { .pick { flex: 1 1 100%; } .pick select { flex: 1; max-width: none; } }
+/* design switch: the plane a view is showing, and the list to change it */
+.subject { position: relative; display: flex; align-items: center; gap: 12px; margin: -12px 0 20px; flex-wrap: wrap; font-size: 0.88rem; color: var(--ink-3); }
+.dswitch { position: relative; min-width: 0; }
+.dsw { display: flex; align-items: center; gap: 12px; padding: 7px 14px 7px 8px; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper); text-align: left; max-width: 100%; transition: border-color 120ms; }
+.dsw:hover, .dsw[aria-expanded="true"] { border-color: var(--ink-3); }
+.dsw .chev, .dpop .chev { width: 8px; height: 8px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(45deg); margin: -3px 2px 0 4px; flex: none; }
+.sil { width: 44px; height: 30px; flex: none; display: grid; place-items: center; background: var(--panel); border-radius: 6px; padding: 3px; }
+.sil svg { width: 100%; height: 100%; }
+.sil svg g { fill: var(--ink); opacity: 0.32; } /* one flat shape, however many layers overlap */
+.txt { display: grid; min-width: 0; }
+.txt .nm { font-weight: 600; color: var(--ink); font-size: 0.95rem; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txt .meta { font-size: 0.78rem; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dpop { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; width: min(440px, calc(100vw - 48px)); background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12); padding: 8px; display: grid; gap: 6px; }
+.dpop input { width: 100%; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); }
+.dpop ul { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow-y: auto; }
+.dpop li { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 8px; cursor: pointer; }
+.dpop li.active, .dpop li:hover { background: var(--panel); }
+.dpop li[aria-selected="true"] .nm::after { content: "  ✓"; color: var(--valley); }
+.dpop li.none { color: var(--ink-3); cursor: default; }
+.dpop .more-link { padding: 6px 8px 2px; font-size: 0.85rem; }
+@media (max-width: 600px) {
+  .dswitch { position: static; flex: 1 1 100%; }
+  .dsw { width: 100%; }
+  .dsw .txt { flex: 1; }
+  .dpop { left: 0; right: 0; width: auto; }
+}
 
 /* sub-pages inside one nav item */
 .subtabs { display: inline-flex; gap: 2px; padding: 3px; background: var(--panel); border-radius: 8px; font-size: 0.85rem; margin-bottom: 22px; }

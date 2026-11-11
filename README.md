@@ -10,7 +10,9 @@ This repository started five years ago as **Aviato**, a small Python experiment 
 
 ## Current results
 
-| | Bestfold D-1 (distance) | Bestfold H-1 (time aloft) |
+The best design for each mission so far. Every design gets a generated name: an adjective, a word that fits the mission, and a Roman numeral for its number of nose folds.
+
+| | Solar Quill III (distance) | Lone Petrel IV (time aloft) |
 |---|---|---|
 | Score: average of the worst 8 of 16 imperfect throws | **14.2 m** | **5.4 s** |
 | Clean throw | 18.4 m | 5.0 s |

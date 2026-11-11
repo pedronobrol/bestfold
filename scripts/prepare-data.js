@@ -9,10 +9,10 @@ import { evaluate } from '../src/evaluate.js';
 import { buildInstructions, throwAdvice } from '../src/instructions.js';
 import { stepDiagrams, diagramSheet } from '../src/template.js';
 import { ENGINE_VERSION } from '../src/version.js';
+import { designName } from '../viewer/names.js';
 
 const root = new URL('../', import.meta.url);
 const RES = process.argv[2] || process.env.BESTFOLD_RESULTS || 'results';
-const NAMES = { distance: 'Bestfold D-1', hangtime: 'Bestfold H-1' };
 
 // Light, static specs of a design (no flight needed): used by the catalog of all designs.
 function specsOf(genome, M) {
@@ -53,9 +53,10 @@ for (const key of Object.keys(MISSIONS)) {
   const ev = evaluate(R.best.design, M, { quick: true, force: true });
   const instr = buildInstructions(ev.geom);
   instr.push({ title: 'Throw it', text: throwAdvice(ev.design, ev.ac).text });
-  writeFileSync(new URL(`results/diagrams-${key}.svg`, root), diagramSheet(stepDiagrams(ev.geom, instr, { cgX: ev.ac.cg[0] }), NAMES[key]));
+  const name = designName(R.best.genome, key, ev.design.noseFolds.length);
+  writeFileSync(new URL(`results/diagrams-${key}.svg`, root), diagramSheet(stepDiagrams(ev.geom, instr, { cgX: ev.ac.cg[0] }), name));
   const d = R.best.design;
-  const md = [`# ${NAMES[key]}: folding instructions`, '', `One ${d.sheetKey} sheet, ${d.landscape ? 'landscape' : 'portrait'}, folded by hand. Step diagrams: diagrams-${key}.svg`, '',
+  const md = [`# ${name}: folding instructions`, '', `One ${d.sheetKey} sheet, ${d.landscape ? 'landscape' : 'portrait'}, folded by hand. Step diagrams: diagrams-${key}.svg`, '',
     ...instr.map((s, i) => `${i + 1}. **${s.title}.** ${s.text}`)].join('\n');
   writeFileSync(new URL(`results/instructions-${key}.md`, root), md + '\n');
 }
