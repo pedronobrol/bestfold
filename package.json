@@ -1,0 +1,28 @@
+{
+  "name": "betterfold",
+  "version": "2.0.0",
+  "description": "Physics-based paper plane design: fold engine, vortex-lattice flight simulation, robust quality-diversity search, folding tutorials and a volunteer search in the browser.",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/engine-version.js && node scripts/build-worker.js && next dev",
+    "build": "node scripts/engine-version.js && node scripts/build-worker.js && next build",
+    "start": "next start",
+    "test": "node scripts/engine-version.js && node scripts/calibrate.js && node scripts/test-folds.js",
+    "optimize": "node scripts/engine-version.js && node scripts/optimize.js",
+    "prepare-data": "node scripts/engine-version.js && node scripts/prepare-data.js",
+    "build:artifact": "node scripts/engine-version.js && node scripts/build-artifact.js",
+    "sanity": "node scripts/sanity.js"
+  },
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "@upstash/redis": "1.40.0",
+    "next": "16.4.3",
+    "react": "19.1.10",
+    "react-dom": "19.1.10",
+    "three": "0.186.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20.9"
+  }
+}

@@ -1,0 +1,149 @@
+<header class="site"><div class="wrap bar">
+  <a class="name" href="#top">Betterfold</a>
+  <nav aria-label="Sections"><a href="#lab">Flight</a><a href="#tunnel">Wind tunnel</a><a href="#evolution">Search</a><a href="#fold">Fold it</a><a href="#together">Contribute</a><a href="#hood">Method</a></nav>
+</div></header>
+
+<main id="top">
+<div class="wrap intro">
+  <h1>Betterfold</h1>
+  <p class="sub">Paper planes designed by simulation and folded by hand from one sheet of A4. No tape, no cuts, no glue.</p>
+  <div class="tabs" role="group" aria-label="Mission">
+    <button id="m-distance" aria-pressed="true" data-mission="distance">Distance</button>
+    <button id="m-hangtime" aria-pressed="false" data-mission="hangtime">Time aloft</button>
+  </div>
+  <div class="hero">
+    <figure class="fig-hero">
+      <div class="stage" id="hero-stage"><div class="loading" id="hero-loading">Folding the sheet…</div></div>
+      <figcaption>Figure 1. The current best design. Drag to rotate.</figcaption>
+    </figure>
+    <div class="hero-text">
+      <h2 id="hero-title">Betterfold D-1</h2>
+      <p id="hero-lede"></p>
+      <table class="facts" id="hero-figs"></table>
+      <p class="links"><a href="#fold">How to fold it</a> <a href="#lab">Watch it fly</a></p>
+    </div>
+  </div>
+</div>
+
+<section id="lab"><div class="wrap">
+  <h2>Flight simulation</h2>
+  <p class="sec-lede">Both planes are thrown with the same speed and angle and simulated live in your browser. Pick one of the 16 test throws or set your own.</p>
+  <div class="lab">
+    <figure>
+      <div class="stage" id="lab-stage"><div class="hud" id="lab-hud" aria-live="off"></div><div class="aero-key" id="aero-key"><span><i class="k-lift"></i>Force per strip</span><span><i class="k-stall"></i>Stalled</span><span><i class="k-w"></i>Weight</span><span><i class="k-heat"></i>Lift loading</span></div></div>
+      <figcaption id="lab-tag">Figure 2. Planes drawn at five times their size; grid squares are 1 m.</figcaption>
+    </figure>
+    <div class="panel">
+      <div class="ctl"><label for="lab-scn">Throw</label><select id="lab-scn"></select></div>
+      <div class="ctl"><label for="lab-speed">Speed <span class="val" id="lab-speed-v"></span></label><input type="range" id="lab-speed" min="4" max="20" step="0.5"></div>
+      <div class="ctl"><label for="lab-pitch">Angle <span class="val" id="lab-pitch-v"></span></label><input type="range" id="lab-pitch" min="-10" max="85" step="1"></div>
+      <div class="views" role="group" aria-label="Camera"><button data-view="side" aria-pressed="true">Side</button><button data-view="chase" aria-pressed="false">Chase</button><button data-view="top" aria-pressed="false">Above</button></div>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="lab-aero" checked> Show forces</label>
+        <label class="tg" for="lab-rate">Playback <select id="lab-rate"><option value="1">Real time</option><option value="0.35" selected>Slowed</option><option value="0.1">Very slow</option></select></label>
+      </div>
+      <button class="btn" id="lab-throw">Throw again</button>
+      <div class="readout" id="lab-readout"></div>
+    </div>
+  </div>
+  <div class="tbl"><table class="sc" id="scn-table"></table></div>
+  <p class="note">A design is scored on the average of its worst 8 throws out of these 16, which vary the throw, the folding and the drag model. Every design gets the same 16 throws.</p>
+</div></section>
+
+<section id="tunnel"><div class="wrap">
+  <h2>Wind tunnel</h2>
+  <p class="sec-lede">The plane is held still in a stream of air. The smoke follows the velocity field the simulator computes: the oncoming air plus the swirl from each vortex panel. The downwash behind the wing and the vortices at the tips are visible; past the stall the flow over the wing breaks up.</p>
+  <div class="lab">
+    <figure>
+      <div class="stage tunnel-stage" id="tunnel-stage"><div class="hud" id="tunnel-hud"></div><div class="aero-key"><span><i class="k-slow"></i>Slower air</span><span><i class="k-fast"></i>Faster air</span><span><i class="k-lift"></i>Force per strip</span></div></div>
+      <figcaption>Figure 3. True size. Drag to look around.</figcaption>
+    </figure>
+    <div class="panel">
+      <div class="tabs small" role="group" aria-label="Plane in the tunnel"><button data-tplane="champ" aria-pressed="true" id="tp-champ">Betterfold</button><button data-tplane="dart" aria-pressed="false" id="tp-dart">Classic dart</button></div>
+      <div class="ctl"><label for="t-alpha">Angle of attack <span class="val" id="t-alpha-v"></span></label><input type="range" id="t-alpha" min="-6" max="40" step="0.5" value="6"></div>
+      <div class="ctl"><label for="t-speed">Airspeed <span class="val" id="t-speed-v"></span></label><input type="range" id="t-speed" min="2" max="16" step="0.5" value="6"></div>
+      <div class="ctl"><label for="t-beta">Sideslip <span class="val" id="t-beta-v"></span></label><input type="range" id="t-beta" min="-20" max="20" step="1" value="0"></div>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="t-smoke" checked> Smoke</label>
+        <label class="tg"><input type="checkbox" id="t-loads" checked> Forces</label>
+      </div>
+      <div class="readout" id="tunnel-readout"></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="evolution"><div class="wrap">
+  <h2>The search</h2>
+  <p class="sec-lede" id="evo-lede"></p>
+  <div class="evo">
+    <div>
+      <div class="chart-legend"><span><span class="dot v"></span>Best design</span><span><span class="dot" style="background:var(--ink-3)"></span>Median across plane types</span></div>
+      <div class="chart" id="evo-chart"></div>
+      <div class="genbar"><label for="evo-gen">Progress</label><input type="range" id="evo-gen" min="0" max="1" step="1"><span class="val" id="evo-gen-v"></span></div>
+      <div class="lineage" id="evo-lineage"></div>
+    </div>
+    <figure>
+      <div class="stage" id="evo-stage"></div>
+      <figcaption>Figure 4. Best design at the selected point in the search.</figcaption>
+      <div class="readout" id="evo-readout"></div>
+    </figure>
+  </div>
+</div></section>
+
+<section id="fold"><div class="wrap">
+  <h2 id="fold-title">How to fold it</h2>
+  <p class="sec-lede">Every measurement comes from the geometry the simulator flew. You need one sheet of A4 and a ruler.</p>
+  <div class="fold">
+    <figure>
+      <div class="stage" id="fold-stage"></div>
+      <figcaption>Figure 5. Front of the sheet light, back blue. The dashed red line is the next crease.</figcaption>
+      <div class="player"><button id="f-prev" aria-label="Previous step">Previous</button><button id="f-play">Play</button><button id="f-next" aria-label="Next step">Next</button><div class="prog"><i id="f-prog"></i></div><span class="val" id="f-count"></span></div>
+    </figure>
+    <ol class="steps" id="fold-steps"></ol>
+  </div>
+  <h3>Step diagrams</h3>
+  <p class="sec-lede">The folded shape at the start of each step, with the crease to make in red, drawn to the same scale.</p>
+  <p class="copyrow"><button class="btn quiet" id="copy-svg">Copy printable sheet (SVG)</button> <span class="note" id="copy-msg" role="status"></span></p>
+  <div class="diagrams" id="diagrams"></div>
+</div></section>
+
+<section id="together"><div class="wrap">
+  <h2>Contribute</h2>
+  <p class="sec-lede">You can help the search by leaving this page open. Your browser runs its own copy of the optimiser in the background and sends any improvement to a shared board. The server re-runs the simulation for every submitted design before it is listed.</p>
+  <div class="together">
+    <div class="panel">
+      <p class="tstat" id="t-live">Connecting…</p>
+      <div class="ctl"><label for="t-threads">Processor use</label><select id="t-threads"><option value="1">Light (1 thread)</option><option value="2">Medium (2 threads)</option><option value="4">Heavy (4 threads)</option></select></div>
+      <button class="btn" id="t-toggle">Start contributing</button>
+      <div class="readout" id="t-mine"><div class="ro-row"><span></span><span>This browser</span><b></b><b>idle</b></div></div>
+      <p class="note" id="t-note">Runs while this tab is open; stop at any time. Results count for the mission selected above.</p>
+    </div>
+    <div class="board">
+      <div class="tbl"><table class="sc" id="t-board"><thead><tr><th>#</th><th>Found by</th><th class="n">Score</th><th class="n">Checked</th><th></th></tr></thead><tbody><tr><td colspan="5" class="muted">No shared designs yet.</td></tr></tbody></table></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="hood"><div class="wrap">
+  <h2>Method</h2>
+  <div class="hood">
+    <div class="prose">
+      <p><strong>Folding.</strong> The sheet is a set of polygons. Each fold reflects the layers on one side of a crease and restacks them. Some folds move only the top layers, which is how locks are made. A design is rejected if a fold would tear the paper, if more than eight layers meet at a crease, or if a large flap is left free to open, since nothing else holds it.</p>
+      <p><strong>Mass.</strong> Mass, balance point and inertia are computed from every folded layer of 80 g/m² paper.</p>
+      <p><strong>Aerodynamics.</strong> A vortex-lattice model on the wings, keel and winglets, with corrections for sharp paper edges (lost suction, and vortex lift on swept edges), skin friction, drag from thick folded edges, and stall. It is checked against wind-tunnel data for flat plates and sharp delta wings and against a measured A4 dart.</p>
+      <p><strong>Flight.</strong> A six-degree-of-freedom simulation in 4 ms steps, including the air the plane has to push aside. Creases act as springs, so the wings rise under load. An energy check stops any flight that gains energy.</p>
+      <p><strong>Trim and launch.</strong> The elevator angle and the launch angle are worked out for each plane, the way you would adjust and throw a real one.</p>
+      <p><strong>Search.</strong> The optimiser keeps the best plane of each type (sheet orientation, sequence of folds, winglets) and improves each with CMA-ES, spending more time on the promising types.</p>
+      <p>Details, limitations and references are in the <a href="https://github.com/pedronobrol/betterfold">source repository</a>.</p>
+    </div>
+    <figure>
+      <div class="chart-legend" id="polar-legend"></div>
+      <div class="chart" id="polar-chart"></div>
+      <figcaption>Figure 6. Lift-to-drag ratio against body angle of attack at 6 m/s. The peak is roughly the distance travelled forward for each metre of height lost in a steady glide.</figcaption>
+    </figure>
+  </div>
+</div></section>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<footer class="site"><div class="wrap">Betterfold is the continuation of Aviato, a project started in 2021. These are simulation results: real paper flexes and varies, so trim the elevator after a few test throws. <a href="https://github.com/pedronobrol/betterfold">Source</a></div></footer>
