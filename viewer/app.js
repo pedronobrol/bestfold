@@ -3,7 +3,7 @@
 // or by the single-file artifact build (scripts/build-artifact.js).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { MISSIONS, LEGACY_GENOME_SIZE, GENOME_SIZE, decode, completeDesign, CLASSICS } from '../src/design.js';
+import { MISSIONS, LEGACY_GENOME_SIZE, GENOME_SIZE, decode, completeDesign, CLASSICS, normalizeGenome } from '../src/design.js';
 import { NOMINAL, SCENARIOS, evaluate } from '../src/evaluate.js';
 import { simulate } from '../src/flight.js';
 import { foldPlane, facets3D, chordAlong } from '../src/fold.js';
@@ -12,6 +12,7 @@ import { buildInstructions, throwAdvice } from '../src/instructions.js';
 import { RHO, NU, buildAircraft, aero, inducedVelocity } from '../src/physics.js';
 import { sketchKey, fromGenome } from '../src/sketch.js';
 import { stepDiagrams, diagramSheet, visibleEdges } from '../src/template.js';
+import { designName } from './names.js';
 import { ENGINE_VERSION } from '../src/version.js';
 
 // data: results (see lib/results.js); community: viewer/community.js backend;
@@ -1051,22 +1052,19 @@ function boardRows() {
   return [...T.verified.entries()].filter(([k, v]) => k.startsWith(mk + '|') && v.ok).map(([, v]) => v).sort((a, b) => b.score - a.score).slice(0, 10);
 }
 async function renderBoard() {
-  const rows = boardRows(), u = current ? unitOf(current) : 'm';
+  const rows = boardRows();
   const names = rows.length ? await community.names([...new Set(rows.flatMap((r) => [...r.owners]))]) : {};
-  const tb = $('#t-board tbody');
+  const box = $('#t-board');
   if (!rows.length) {
-    tb.innerHTML = `<tr><td colspan="5" class="muted">${T.pending.size ? `Verifying ${T.pending.size} shared design${T.pending.size > 1 ? 's' : ''}…` : 'No shared designs yet. Start contributing to post the first one.'}</td></tr>`;
+    box.innerHTML = `<p class="empty">${T.pending.size ? `Checking ${T.pending.size} shared design${T.pending.size > 1 ? 's' : ''}…` : 'No contributions yet. Start contributing to post the first one.'}</p>`;
     return;
   }
-  tb.innerHTML = '';
-  rows.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    const who = [...r.owners].map((id) => names[id] || (id === community.me ? 'You' : 'Someone')).join(', ');
-    tr.innerHTML = `<td>${i + 1}</td><td></td><td class="n">${fmt(r.score, 2)} ${u}</td><td class="n">${r.by === 'server' ? '✓ re-simulated by server' : '✓ re-simulated here'}</td><td><button>Show</button></td>`;
-    tr.children[1].textContent = who;
-    tr.querySelector('button').addEventListener('click', () => adopt(r.genome, `Community design #${i + 1}`));
-    tb.appendChild(tr);
-  });
+  box.innerHTML = '';
+  rows.slice(0, 5).forEach((r, i) => box.appendChild(designRow(catalogItem({
+    genome: r.genome, score: r.score, source: 'community', at: r.at,
+    owner: [...r.owners].map((id) => names[id] || (id === community.me ? 'You' : 'Someone')).join(', '),
+  }), i + 1)));
+  if (shown === 'designs') renderDesigns();
 }
 function migrate() {
   const entries = boardRows().slice(0, 8).map((r) => ({ key: sketchKey(fromGenome(r.genome).sketch), genome: r.genome, fitness: r.score }));
@@ -1146,7 +1144,7 @@ document.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('c
   setTimeout(ingest, 200);
 }));
 // Load a community design into the whole page (hero, lab, tutorial).
-function adopt(genome, label) {
+function adopt(genome, label, goto = 'overview') {
   const key = missionKey();
   const R = DATA.missions[key];
   const prevBest = R.best;
@@ -1154,17 +1152,136 @@ function adopt(genome, label) {
   cache.delete(key);
   show(key);
   setTimeout(() => { $('#hero-title').textContent = label; R.best = prevBest; cache.delete(key); }, 400);
-  location.hash = 'overview';
+  location.hash = goto;
 }
 initTogether();
+
+// ---------------- design catalog ----------------
+// Every design has a deterministic name (viewer/names.js). Rows expand in place to show a rotating
+// preview (one shared WebGL stage that moves into the open row), metrics simulated on demand, and
+// buttons to fly or fold the design.
+const FOLD_WORDS = { diag: 'corner', tip: 'nose', lock: 'lock', pleat: 'pleat' };
+let openKey = null; // the open row survives list refreshes
+const specCache = new Map();
+function catalogItem({ genome, score, source, at = 0, owner = null, specs = null }) {
+  const mk = missionKey();
+  const k = gkey(genome);
+  let sp = specs || specCache.get(k);
+  if (!sp) {
+    const d = decode(normalizeGenome(genome), MISSIONS[mk]);
+    const geom = foldPlane(d), ac = geom.ok ? buildAircraft(geom) : null;
+    sp = { landscape: d.landscape, winglets: d.winglet.enabled, folds: d.noseFolds.map((f) => f.type), span: ac && ac.span, area: ac && ac.Sref, mass: ac && ac.mass };
+    specCache.set(k, sp);
+  }
+  return { genome, score, source, at, owner, specs: sp, mission: mk, name: designName(genome, mk, sp.folds.length) };
+}
+function describe(sp) {
+  const folds = sp.folds.length ? sp.folds.map((t) => FOLD_WORDS[t] || t).join(', ') : 'no nose folds';
+  return `${sp.landscape ? 'Landscape' : 'Portrait'} · ${folds}${sp.winglets ? ' · winglets' : ''}${sp.span ? ` · ${fmt(sp.span * 100)} cm span` : ''}`;
+}
+const preview = (() => {
+  const el = document.createElement('div');
+  el.className = 'stage';
+  const st = makeStage(el);
+  st.camera.position.set(-0.24, 0.16, 0.3);
+  const P = { el, st, paper: null };
+  st.tick = (dt) => { if (P.paper && !reduceMotion) P.paper.root.rotation.y += dt * 0.4; };
+  return P;
+})();
+function showPreview(holder, genome) {
+  holder.appendChild(preview.el);
+  if (preview.paper) preview.st.scene.remove(preview.paper.root);
+  const d = decode(normalizeGenome(genome), MISSIONS[missionKey()]);
+  const geom = foldPlane(d);
+  if (!geom.ok) return;
+  const ac = buildAircraft(geom);
+  const paper = new Paper(geom);
+  paper.set(flightPoints(paper, ac.cg));
+  paper.group.quaternion.copy(Q_FLIGHT);
+  paper.root = new THREE.Group();
+  paper.root.add(paper.group);
+  preview.st.scene.add(paper.root);
+  preview.paper = paper;
+}
+function designRow(item, rank) {
+  const u = unitOf({ key: item.mission });
+  const row = document.createElement('div');
+  row.className = 'drow';
+  const by = item.source === 'community' ? `Found by ${item.owner || 'a contributor'}` : 'Found by the search';
+  row.innerHTML = `<button aria-expanded="false"><span class="rk">${rank}</span><span><span class="nm"></span><span class="meta"></span></span><span class="sc">${fmt(item.score, 2)} ${u}</span><span class="chev" aria-hidden="true"></span></button>
+    <div class="detail"><div class="pv"></div><div><dl></dl><div class="acts"><a class="btn" href="#lab">Fly it</a><a class="btn quiet" href="#fold">Fold it</a></div></div></div>`;
+  row.querySelector('.nm').textContent = item.name;
+  const R = DATA.missions[item.mission];
+  const champ = R && R.best && gkey(R.best.genome) === gkey(item.genome);
+  row.querySelector('.meta').textContent = (champ ? `Current best (${item.mission === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1'}) · ` : '') + describe(item.specs);
+  const head = row.querySelector('button'), dl = row.querySelector('dl');
+  const k = gkey(item.genome);
+  const toggle = (open) => {
+    for (const other of document.querySelectorAll('.drow.open')) if (other !== row) { other.classList.remove('open'); other.querySelector('button').setAttribute('aria-expanded', 'false'); }
+    row.classList.toggle('open', open);
+    head.setAttribute('aria-expanded', String(open));
+    if (!open) { if (openKey === k) openKey = null; return; }
+    openKey = k;
+    showPreview(row.querySelector('.pv'), item.genome);
+    const sp = item.specs;
+    const base = [['Score', `${fmt(item.score, 2)} ${u}`], ['Clean throw', '…'], ['Wingspan', sp.span ? `${fmt(sp.span * 100)} cm` : '–'], ['Wing area', sp.area ? `${fmt(sp.area * 1e4, 0)} cm²` : '–'],
+      ['Mass', sp.mass ? `${fmt(sp.mass * 1000, 2)} g` : '–'], ['Stability margin', '…'], ['Sheet', sp.landscape ? 'A4 landscape' : 'A4 portrait'], ['Source', by]];
+    const draw = (rows) => { dl.innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join(''); };
+    draw(base);
+    // the clean throw needs a short simulation; run it after the row has opened
+    setTimeout(() => {
+      const ev = evaluate(decode(normalizeGenome(item.genome), MISSIONS[item.mission]), MISSIONS[item.mission], { quick: true, force: true });
+      if (!row.classList.contains('open')) return;
+      base[1][1] = ev.nominal ? `${fmt(ev.nominal.metric)} ${u}` : '–';
+      base[5][1] = ev.sm !== undefined ? `${fmt(ev.sm * 100, 0)}%` : '–';
+      draw(base);
+    }, 30);
+  };
+  head.addEventListener('click', () => toggle(!row.classList.contains('open')));
+  if (openKey === k) setTimeout(() => toggle(true), 0); // re-open after a refresh
+  row.querySelector('a[href="#lab"]').addEventListener('click', (e) => { e.preventDefault(); adopt(item.genome, item.name, 'lab'); });
+  row.querySelector('a[href="#fold"]').addEventListener('click', (e) => { e.preventDefault(); adopt(item.genome, item.name, 'fold'); });
+  return row;
+}
+// All designs: the shipped archive (best plane of every type from the search) plus contributions.
+const DV = { page: 1, per: 25 };
+function allItems() {
+  const mk = missionKey(), R = DATA.missions[mk];
+  const items = ((R && R.archive) || []).map((e) => catalogItem({ genome: e.genome, score: e.fitness, source: 'search', specs: e.specs }));
+  const seen = new Set(items.map((i) => gkey(i.genome)));
+  for (const r of boardRows()) if (!seen.has(gkey(r.genome))) items.push(catalogItem({ genome: r.genome, score: r.score, source: 'community', at: r.at, owner: [...r.owners].map((id) => (id === community.me ? 'You' : 'a contributor')).join(', ') }));
+  return items;
+}
+function renderDesigns() {
+  const q = $('#d-q').value.trim().toLowerCase(), sheet = $('#d-sheet').value, wing = $('#d-wing').value, folds = $('#d-folds').value, src = $('#d-src').value, sort = $('#d-sort').value;
+  let items = allItems().filter((i) => (!q || i.name.toLowerCase().includes(q))
+    && (!sheet || (sheet === 'landscape') === i.specs.landscape)
+    && (!wing || (wing === 'yes') === i.specs.winglets)
+    && (folds === '' || i.specs.folds.length === +folds)
+    && (!src || i.source === src));
+  const by = { score: (a, b) => b.score - a.score, span: (a, b) => (b.specs.span || 0) - (a.specs.span || 0), area: (a, b) => (b.specs.area || 0) - (a.specs.area || 0), new: (a, b) => (b.at || 0) - (a.at || 0) || b.score - a.score };
+  items.sort(by[sort]);
+  const total = allItems().length;
+  $('#d-lede').textContent = `The best plane of every type found by the search, plus everything contributors have found: ${total} designs for ${missionKey() === 'distance' ? 'distance' : 'time aloft'}.`;
+  $('#d-count').textContent = items.length === total ? `${total} designs` : `${items.length} of ${total} designs`;
+  const list = $('#d-list');
+  list.innerHTML = '';
+  const shownItems = items.slice(0, DV.page * DV.per);
+  if (!shownItems.length) list.innerHTML = '<p class="empty">No designs match these filters.</p>';
+  shownItems.forEach((it, i) => list.appendChild(designRow(it, i + 1)));
+  $('#d-more').hidden = items.length <= shownItems.length;
+}
+for (const id of ['#d-q', '#d-sheet', '#d-wing', '#d-folds', '#d-src', '#d-sort']) $(id).addEventListener('input', () => { DV.page = 1; renderDesigns(); });
+$('#d-more').addEventListener('click', () => { DV.page++; renderDesigns(); });
+document.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('click', () => setTimeout(() => { if (shown === 'designs') { DV.page = 1; renderDesigns(); } }, 60)));
 
 // ---------------- views ----------------
 // One view at a time, chosen by the URL hash (#overview, #lab, …), so every view has its own
 // address and the back button works. Switching lands at the top of the view instantly.
 const views = [...document.querySelectorAll('.view')];
 const navLinks = [...document.querySelectorAll('header.site nav a')];
-const titles = Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').slice(1), a.textContent]));
-let shown = null;
+const titles = { ...Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').slice(1), a.textContent])), designs: 'All designs' };
+var shown = null; // var: read by board rendering before the router runs
 function route() {
   const id = location.hash.slice(1);
   // Views are keyed by data-view, not id, so the browser never does its own jump-to-anchor
@@ -1173,13 +1290,15 @@ function route() {
   if (target === shown) return;
   shown = target;
   for (const v of views) v.classList.toggle('active', v.dataset.view === target);
+  const navTarget = target === 'designs' ? 'together' : target; // All designs lives under Contribute
   for (const a of navLinks) {
-    if (a.getAttribute('href') === '#' + target) a.setAttribute('aria-current', 'page');
+    if (a.getAttribute('href') === '#' + navTarget) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   }
   document.title = target === 'overview' ? 'Bestfold' : `${titles[target]} · Bestfold`;
   window.scrollTo(0, 0);
   if (target === 'lab' && labMission) throwLab(); // replay the throw when the view opens
+  if (target === 'designs') { DV.page = 1; renderDesigns(); }
 }
 window.addEventListener('hashchange', route);
 route();

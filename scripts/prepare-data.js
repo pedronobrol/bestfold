@@ -2,7 +2,9 @@
 // (public/data/bestfold.json), and writes printable instructions and step diagrams to results/.
 // Usage: node scripts/prepare-data.js [results dir]   (default: results)
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
-import { MISSIONS, CLASSICS, completeDesign } from '../src/design.js';
+import { MISSIONS, CLASSICS, completeDesign, decode, normalizeGenome } from '../src/design.js';
+import { foldPlane } from '../src/fold.js';
+import { buildAircraft } from '../src/physics.js';
 import { evaluate } from '../src/evaluate.js';
 import { buildInstructions, throwAdvice } from '../src/instructions.js';
 import { stepDiagrams, diagramSheet } from '../src/template.js';
@@ -11,6 +13,18 @@ import { ENGINE_VERSION } from '../src/version.js';
 const root = new URL('../', import.meta.url);
 const RES = process.argv[2] || process.env.BESTFOLD_RESULTS || 'results';
 const NAMES = { distance: 'Bestfold D-1', hangtime: 'Bestfold H-1' };
+
+// Light, static specs of a design (no flight needed): used by the catalog of all designs.
+function specsOf(genome, M) {
+  const d = decode(normalizeGenome(genome), M);
+  const geom = foldPlane(d);
+  const ac = geom.ok ? buildAircraft(geom) : null;
+  const r = (x, k = 3) => +x.toFixed(k);
+  return {
+    landscape: d.landscape, winglets: d.winglet.enabled, folds: d.noseFolds.map((f) => f.type),
+    span: ac ? r(ac.span) : null, area: ac ? r(ac.Sref, 4) : null, mass: ac ? r(ac.mass, 5) : null,
+  };
+}
 
 const missions = {};
 for (const key of Object.keys(MISSIONS)) {
@@ -23,7 +37,8 @@ for (const key of Object.keys(MISSIONS)) {
     mission: key, algorithm: R.algorithm, evals: R.evals, feasibleFraction: R.feasibleFraction,
     best: R.best,
     history: R.history.map((h) => ({ gen: h.gen, best: h.best, median: h.median, bestGenome: h.bestGenome, bestKey: h.bestKey, filled: h.filled, evals: h.evals })),
-    archive: (R.archive || []).map((e) => ({ key: e.key, genome: e.genome, fitness: e.fitness, feasible: e.feasible })),
+    // every feasible elite with the specs the catalog filters and sorts on
+    archive: (R.archive || []).filter((e) => e.feasible).map((e) => ({ key: e.key, genome: e.genome, fitness: e.fitness, feasible: true, specs: specsOf(e.genome, M) })),
   };
   // Fair baseline: the classic dart gets its best trim too, under the same rules.
   let best = { cl: 0.12, s: -Infinity };
