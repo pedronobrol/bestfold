@@ -40,7 +40,7 @@ for (const key of Object.keys(MISSIONS)) {
   instr.push({ title: 'Throw it', text: throwAdvice(ev.design, ev.ac).text });
   writeFileSync(new URL(`results/diagrams-${key}.svg`, root), diagramSheet(stepDiagrams(ev.geom, instr, { cgX: ev.ac.cg[0] }), NAMES[key]));
   const d = R.best.design;
-  const md = [`# ${NAMES[key]}: folding instructions`, '', `One ${d.sheetKey} sheet, ${d.landscape ? 'landscape' : 'portrait'}. No tape, no cuts, no glue. Step diagrams: diagrams-${key}.svg`, '',
+  const md = [`# ${NAMES[key]}: folding instructions`, '', `One ${d.sheetKey} sheet, ${d.landscape ? 'landscape' : 'portrait'}, folded by hand. Step diagrams: diagrams-${key}.svg`, '',
     ...instr.map((s, i) => `${i + 1}. **${s.title}.** ${s.text}`)].join('\n');
   writeFileSync(new URL(`results/instructions-${key}.md`, root), md + '\n');
 }

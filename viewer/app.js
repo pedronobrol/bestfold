@@ -241,7 +241,7 @@ function renderHero(m) {
   const steps = m.instr.length - 1;
   const what = m.key === 'distance' ? 'distance' : 'time aloft';
   const unitWord = u === 'm' ? 'm' : 's';
-  $('#hero-lede').textContent = `The current best design for ${what}, folded from a ${d.landscape ? 'landscape' : 'portrait'} A4 sheet in ${steps} steps. On a clean throw the simulation gives ${fmt(c.nominal.metric)} ${unitWord}. Across 16 imperfect throws, the average of the worst eight is ${fmt(c.robust)} ${unitWord}; a classic dart, trimmed as well as possible and judged the same way, gets ${fmt(m.dart.robust)} ${unitWord}.`;
+  $('#hero-lede').textContent = `The current best design for ${what}, folded from a ${d.landscape ? 'landscape' : 'portrait'} A4 sheet in ${steps} steps. On a clean throw the simulation gives ${fmt(c.nominal.metric)} ${unitWord}. Across 16 imperfect throws, the average of the worst eight is ${fmt(c.robust)} ${unitWord}. A classic dart, trimmed as well as possible and judged the same way, gets ${fmt(m.dart.robust)} ${unitWord}.`;
   const maxLD = Math.max(...m.polar.map((r) => r.LD));
   const rows = [
     [m.key === 'distance' ? 'Clean throw' : 'Time aloft, clean throw', `${fmt(c.nominal.metric)} ${unitWord}`],
@@ -1150,7 +1150,31 @@ function adopt(genome, label) {
   cache.delete(key);
   show(key);
   setTimeout(() => { $('#hero-title').textContent = label; R.best = prevBest; cache.delete(key); }, 400);
-  document.querySelector('.hero').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+  location.hash = 'overview';
 }
 initTogether();
+
+// ---------------- views ----------------
+// One view at a time, chosen by the URL hash (#overview, #lab, …), so every view has its own
+// address and the back button works. Switching lands at the top of the view instantly.
+const views = [...document.querySelectorAll('.view')];
+const navLinks = [...document.querySelectorAll('header.site nav a')];
+const titles = Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').slice(1), a.textContent]));
+let shown = null;
+function route() {
+  const id = location.hash.slice(1);
+  const target = views.some((v) => v.id === id) ? id : 'overview';
+  if (target === shown) return;
+  shown = target;
+  for (const v of views) v.classList.toggle('active', v.id === target);
+  for (const a of navLinks) {
+    if (a.getAttribute('href') === '#' + target) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  }
+  document.title = target === 'overview' ? 'Bestfold' : `${titles[target]} · Bestfold`;
+  window.scrollTo(0, 0);
+  if (target === 'lab' && labMission) throwLab(); // replay the throw when the view opens
+}
+window.addEventListener('hashchange', route);
+route();
 }

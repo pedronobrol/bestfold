@@ -59,7 +59,7 @@ export function buildInstructions(geom) {
       out.push({
         anim: { kind: 'A', step: j },
         title: 'Pleat the nose (2 of 2)',
-        text: `Fold only the flap you just made back up, along a crease square to the centre line ${cm(s.width)} below the first crease; leave the sheet underneath flat. The nose is now a Z-shaped pleat ${cm(s.width)} deep, three layers thick.`,
+        text: `Fold only the flap you just made back up, along a crease square to the centre line ${cm(s.width)} below the first crease. Leave the sheet underneath flat. The nose is now a Z-shaped pleat ${cm(s.width)} deep, three layers thick.`,
       });
     } else if (s.kind === 'lock') {
       foldNo++;
@@ -83,12 +83,12 @@ export function buildInstructions(geom) {
   out.push({
     anim: { kind: 'B', from: { wingFlat: 0 }, to: { wingFlat: 1 } },
     title: 'Fold the wings down',
-    text: `Fold the top wing down. The crease is ${cm(dN)} above the keel edge at the nose and ${cm(dT)} above it at the tail; mark both points and crease between them. Flip the plane over and fold the other wing to match exactly.`,
+    text: `Fold the top wing down. The crease is ${cm(dN)} above the keel edge at the nose and ${cm(dT)} above it at the tail. Mark both points and crease between them. Flip the plane over and fold the other wing to match exactly.`,
   });
   out.push({
     anim: { kind: 'B', from: { wingFlat: 1 }, to: { wingOpen: 1 } },
     title: 'Set the wings',
-    text: `Open the wings so each sits about ${Math.round(design.wing.dihedral * deg)}° ${design.wing.dihedral >= 0 ? 'above' : 'below'} horizontal: viewed from behind, a ${design.wing.dihedral >= 0 ? 'shallow V' : 'slight droop'}. Pinch the keel firmly along its length so the layers stay together; no tape or glue is needed.`,
+    text: `Open the wings so each sits about ${Math.round(design.wing.dihedral * deg)}° ${design.wing.dihedral >= 0 ? 'above' : 'below'} horizontal. Seen from behind, they form a ${design.wing.dihedral >= 0 ? 'shallow V' : 'slight droop'}. Pinch the keel firmly along its length so the layers stay together.`,
   });
   if (phaseB.wingletX !== null) {
     out.push({
@@ -102,7 +102,7 @@ export function buildInstructions(geom) {
     out.push({
       anim: { kind: 'B', from: { wingOpen: 1, winglet: 1, elev: 0 }, to: { wingOpen: 1, winglet: 1, elev: 1 } },
       title: up ? 'Bend the elevator up' : 'Bend the trailing edge down',
-      text: `Along the rear ${cm(design.elevator.chord)} of each wing, bend the paper ${up ? 'up' : 'down'} by about ${Math.abs(design.elevator.angle * deg).toFixed(0)}°. This is the trim tab. Test-glide gently: if the plane dives, bend the trailing edge up a little; if it swoops up and stalls, bend it down a little. Repeat until it glides smoothly.`,
+      text: `Along the rear ${cm(design.elevator.chord)} of each wing, bend the paper ${up ? 'up' : 'down'} by about ${Math.abs(design.elevator.angle * deg).toFixed(0)}°. This is the trim tab. Test it with a gentle glide. If the plane dives, bend the trailing edge up a little. If it swoops up and stalls, bend it down a little. Repeat until it glides smoothly.`,
     });
   }
   return out;
@@ -114,7 +114,7 @@ export function throwAdvice(design, ac) {
   const p = design.launch.pitch * deg, b = (design.launch.bank || 0) * deg;
   return {
     grip,
-    text: `Pinch the keel ${cm(grip)} behind the nose (that is the balance point). Throw firmly, about ${design.launch.speed} m/s (a brisk overhand toss), aiming ${p.toFixed(0)}° ${p >= 0 ? 'above' : 'below'} level${Math.abs(b) > 3 ? ` with the wings banked about ${b.toFixed(0)}°` : ' with the wings level'}.`,
+    text: `Hold the keel ${cm(grip)} behind the nose, at the balance point. Throw firmly, about ${design.launch.speed} m/s (a brisk overhand toss), aiming ${p.toFixed(0)}° ${p >= 0 ? 'above' : 'below'} level${Math.abs(b) > 3 ? ` with the wings banked about ${b.toFixed(0)}°` : ' with the wings level'}.`,
   };
 }
 function geomNoseX(ac) {
