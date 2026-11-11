@@ -1,4 +1,4 @@
-# Betterfold v2 plan
+# Bestfold v2 plan
 
 Consolidated from the research report (`reports/Computational paper plane design.md`) and two independent
 reviews (`research_notes/Computational paper plane design/reviews/fable.md`, `astra.md`).

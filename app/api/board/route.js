@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
 const MISSIONS = new Set(['distance', 'hangtime']);
-const boardKey = (mission) => `betterfold:board:${ENGINE_VERSION}:${mission}`;
+const boardKey = (mission) => `bestfold:board:${ENGINE_VERSION}:${mission}`;
 const parse = (v) => (typeof v === 'string' ? JSON.parse(v) : v);
 
 export async function GET(req) {

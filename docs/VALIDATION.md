@@ -1,4 +1,4 @@
-# Betterfold real-throw validation protocol
+# Bestfold real-throw validation protocol
 
 Goal: check that the simulator **ranks** real hand-folded A4 planes correctly, then refit three parameters. **Pass: Spearman ρ ≥ 0.7** between simulated and measured per-design medians (with 6 designs: Σd² ≤ 10).
 
@@ -17,7 +17,7 @@ Goal: check that the simulator **ranks** real hand-folded A4 planes correctly, t
 | Code | Design | Why |
 |---|---|---|
 | D1 | Classic dart | Baseline everyone knows |
-| D2 | Betterfold champion | The claim under test |
+| D2 | Bestfold champion | The claim under test |
 | D3, D4 | Two elites from **different** MAP-Elites cells | Tests ranking, not one shape |
 | D5 | Nakamura lock (optional) | Locked-nose reference |
 | D6 | Predicted-bad control | Must come last |
@@ -28,7 +28,7 @@ Goal: check that the simulator **ranks** real hand-folded A4 planes correctly, t
 
 ## 3. Folding and build record
 
-Fold each copy from the Betterfold instructions only (no tape/cuts/glue). Write a code (e.g. `K7`) underneath, not the name. Record mass, CG (mm from nose), span, dihedral, elevator bend, fold errors > 2 mm.
+Fold each copy from the Bestfold instructions only (no tape/cuts/glue). Write a code (e.g. `K7`) underneath, not the name. Record mass, CG (mm from nose), span, dihedral, elevator bend, fold errors > 2 mm.
 
 ## 4. Randomisation and blinding
 
@@ -72,7 +72,7 @@ Date, times, venue, temperature, RH % (re-read every ~60 throws; paper goes limp
 ## 9. Analysis (`node analyze.js log.csv predictions.json`)
 
 1. **Per design:** n, median, IQR, outcome mix (scored throws only).
-2. **Re-simulate at the measured launch.** Put each design's median measured speed and angle into Betterfold. Use the **median of the 16 randomised throws** as the prediction; clean-throw and the robust score are secondary.
+2. **Re-simulate at the measured launch.** Put each design's median measured speed and angle into Bestfold. Use the **median of the 16 randomised throws** as the prediction; clean-throw and the robust score are secondary.
 3. **Spearman ρ** between predicted and measured medians. The 95% CI uses a two-stage bootstrap: resample copies within each design, then throws within copies. **Pass:** ρ ≥ 0.7, and D6 is measured last or second-last.
 4. **Bias:** the geometric mean of measured/predicted, with a CI. A bias of 0.7–1.3 is acceptable before the refit. Larger bias with a good ρ means the parameters are off but the physics is sound.
 5. **Refit, then re-check ranks:**

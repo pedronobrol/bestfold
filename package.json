@@ -1,5 +1,5 @@
 {
-  "name": "betterfold",
+  "name": "bestfold",
   "version": "2.0.0",
   "description": "Physics-based paper plane design: fold engine, vortex-lattice flight simulation, robust quality-diversity search, folding tutorials and a volunteer search in the browser.",
   "type": "module",
