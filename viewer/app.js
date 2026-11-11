@@ -237,23 +237,19 @@ function renderHero(m) {
   $('#hero-loading').hidden = true;
   const d = m.design, c = m.champ, u = unitOf(m);
   const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
-  $('#hero-title').textContent = name;
-  const steps = m.instr.length - 1;
   const what = m.key === 'distance' ? 'distance' : 'time aloft';
-  const unitWord = u === 'm' ? 'm' : 's';
-  $('#hero-lede').textContent = `The current best design for ${what}, folded from a ${d.landscape ? 'landscape' : 'portrait'} A4 sheet in ${steps} steps. On a clean throw the simulation gives ${fmt(c.nominal.metric)} ${unitWord}. Across 16 imperfect throws, the average of the worst eight is ${fmt(c.robust)} ${unitWord}. A classic dart, trimmed as well as possible and judged the same way, gets ${fmt(m.dart.robust)} ${unitWord}.`;
+  $('#hero-title').textContent = name;
+  $('#hero-lede').textContent = `Folded by hand from one sheet of A4. This is the current best design for ${what}.`;
+  $('#hero-num').innerHTML = `${fmt(c.robust)}<small>${u === 'm' ? 'm' : 's'}</small>`;
+  $('#hero-what').textContent = `Average of its worst 8 out of 16 imperfect throws in simulation. A clean throw gives ${fmt(c.nominal.metric)} ${u}.`;
+  $('#hero-compare').innerHTML = `Classic dart, same test <b>${fmt(m.dart.robust)} ${u}</b>`;
   const maxLD = Math.max(...m.polar.map((r) => r.LD));
   const rows = [
-    [m.key === 'distance' ? 'Clean throw' : 'Time aloft, clean throw', `${fmt(c.nominal.metric)} ${unitWord}`],
-    ['Score (worst 8 of 16 throws)', `${fmt(c.robust)} ${unitWord}`],
-    ['Classic dart, same test', `${fmt(m.dart.robust)} ${unitWord}`],
-    ['Best glide ratio', fmt(maxLD)],
-    ['Wingspan', `${fmt(c.span * 100)} cm`],
-    ['Wing area', `${fmt(c.Sref * 1e4, 0)} cm²`],
-    ['Mass', `${fmt(c.mass * 1000, 2)} g`],
-    ['Stability margin', `${fmt(c.sm * 100, 0)}% of chord`],
+    ['Wingspan', `${fmt(c.span * 100)} cm`], ['Wing area', `${fmt(c.Sref * 1e4, 0)} cm²`],
+    ['Mass', `${fmt(c.mass * 1000, 2)} g`], ['Glide ratio', fmt(maxLD)],
+    ['Folding steps', String(m.instr.length - 1)], ['Sheet', d.landscape ? 'A4 landscape' : 'A4 portrait'],
   ];
-  $('#hero-figs').innerHTML = rows.map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`).join('');
+  $('#hero-figs').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
   if (heroPaper) hero.scene.remove(heroPaper.group);
   heroPaper = new Paper(c.geom);
   heroPaper.set(flightPoints(heroPaper, c.ac.cg));
@@ -562,7 +558,7 @@ tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
 tGeo.setAttribute('color', new THREE.BufferAttribute(tCol, 3));
 const smoke = new THREE.LineSegments(tGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9, depthWrite: false }));
 tunnel.scene.add(smoke);
-const SLOW = new THREE.Color('#4f7fd8'), FAST = new THREE.Color('#f2a03d'), MID = new THREE.Color('#c9d3df');
+const SLOW = new THREE.Color('#4f7fd8'), FAST = new THREE.Color('#f2a03d'), MID = new THREE.Color('#8b929b');
 const BOX = { x0: 0.22, x1: -0.6, y: [-0.07, 0.09], z: [-0.13, 0.13] };
 function spawn(p, anywhere) {
   let x = anywhere ? BOX.x1 + Math.random() * (BOX.x0 - BOX.x1) : BOX.x0;
@@ -1163,10 +1159,12 @@ const titles = Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').sl
 let shown = null;
 function route() {
   const id = location.hash.slice(1);
-  const target = views.some((v) => v.id === id) ? id : 'overview';
+  // Views are keyed by data-view, not id, so the browser never does its own jump-to-anchor
+  // scroll after we have placed the view at the top.
+  const target = views.some((v) => v.dataset.view === id) ? id : 'overview';
   if (target === shown) return;
   shown = target;
-  for (const v of views) v.classList.toggle('active', v.id === target);
+  for (const v of views) v.classList.toggle('active', v.dataset.view === target);
   for (const a of navLinks) {
     if (a.getAttribute('href') === '#' + target) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');

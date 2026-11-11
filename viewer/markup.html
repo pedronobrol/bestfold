@@ -8,30 +8,34 @@
 </div></header>
 
 <main>
-<section id="overview" class="view"><div class="wrap intro">
-  <h1>Bestfold</h1>
-  <p class="sub">Paper planes designed by simulation, each folded by hand from a single sheet of A4 paper.</p>
+<section class="view" data-view="overview"><div class="wrap intro">
   <div class="hero">
+    <div class="hero-text">
+      <h1>Paper planes designed by simulation</h1>
+      <p class="sub" id="hero-lede">Folded by hand from one sheet of A4.</p>
+      <h2 id="hero-title">Bestfold D-1</h2>
+      <div class="headline">
+        <div class="num" id="hero-num">–</div>
+        <p class="what" id="hero-what"></p>
+      </div>
+      <p class="compare" id="hero-compare"></p>
+      <dl class="facts" id="hero-figs"></dl>
+      <div class="actions"><a class="btn" href="#fold">How to fold it</a><a class="btn quiet" href="#lab">Watch it fly</a></div>
+    </div>
     <figure class="fig-hero">
       <div class="stage" id="hero-stage"><div class="loading" id="hero-loading">Folding the sheet…</div></div>
-      <figcaption>Figure 1. The current best design. Drag to rotate.</figcaption>
+      <figcaption>Drag to rotate.</figcaption>
     </figure>
-    <div class="hero-text">
-      <h2 id="hero-title">Bestfold D-1</h2>
-      <p id="hero-lede"></p>
-      <table class="facts" id="hero-figs"></table>
-      <p class="links"><a href="#fold">How to fold it</a> <a href="#lab">Watch it fly</a></p>
-    </div>
   </div>
 </div></section>
 
-<section id="lab" class="view"><div class="wrap">
+<section class="view" data-view="lab"><div class="wrap">
   <h2>Flight simulation</h2>
   <p class="sec-lede">Both planes are thrown with the same speed and angle and simulated live in your browser. Pick one of the 16 test throws or set your own.</p>
   <div class="lab">
     <figure>
       <div class="stage" id="lab-stage"><div class="hud" id="lab-hud" aria-live="off"></div><div class="aero-key" id="aero-key"><span><i class="k-lift"></i>Force per strip</span><span><i class="k-stall"></i>Stalled</span><span><i class="k-w"></i>Weight</span><span><i class="k-heat"></i>Lift loading</span></div></div>
-      <figcaption id="lab-tag">Figure 2. The planes are drawn five times their real size. Grid squares are 1 m.</figcaption>
+      <figcaption id="lab-tag">The planes are drawn five times their real size. Grid squares are 1 m.</figcaption>
     </figure>
     <div class="panel">
       <div class="ctl"><label for="lab-scn">Throw</label><select id="lab-scn"></select></div>
@@ -50,13 +54,13 @@
   <p class="note">A design is scored on the average of its worst 8 throws out of these 16, which vary the throw, the folding and the drag model. Every design gets the same 16 throws.</p>
 </div></section>
 
-<section id="tunnel" class="view"><div class="wrap">
+<section class="view" data-view="tunnel"><div class="wrap">
   <h2>Wind tunnel</h2>
   <p class="sec-lede">The plane is held still in a stream of air. The smoke moves with the air as the simulator computes it, including the swirl around each vortex panel. You can see the air pushed down behind the wing and the vortices trailing from the tips. Past the stall, the flow over the wing breaks up.</p>
   <div class="lab">
     <figure>
       <div class="stage tunnel-stage" id="tunnel-stage"><div class="hud" id="tunnel-hud"></div><div class="aero-key"><span><i class="k-slow"></i>Slower air</span><span><i class="k-fast"></i>Faster air</span><span><i class="k-lift"></i>Force per strip</span></div></div>
-      <figcaption>Figure 3. True size. Drag to look around.</figcaption>
+      <figcaption>True size. Drag to look around.</figcaption>
     </figure>
     <div class="panel">
       <div class="tabs small" role="group" aria-label="Plane in the tunnel"><button data-tplane="champ" aria-pressed="true" id="tp-champ">Bestfold</button><button data-tplane="dart" aria-pressed="false" id="tp-dart">Classic dart</button></div>
@@ -72,7 +76,7 @@
   </div>
 </div></section>
 
-<section id="evolution" class="view"><div class="wrap">
+<section class="view" data-view="evolution"><div class="wrap">
   <h2>The search</h2>
   <p class="sec-lede" id="evo-lede"></p>
   <div class="evo">
@@ -84,19 +88,19 @@
     </div>
     <figure>
       <div class="stage" id="evo-stage"></div>
-      <figcaption>Figure 4. Best design at the selected point in the search.</figcaption>
+      <figcaption>Best design at the selected point in the search.</figcaption>
       <div class="readout" id="evo-readout"></div>
     </figure>
   </div>
 </div></section>
 
-<section id="fold" class="view"><div class="wrap">
+<section class="view" data-view="fold"><div class="wrap">
   <h2 id="fold-title">How to fold it</h2>
   <p class="sec-lede">Every measurement comes from the geometry the simulator flew. You need one sheet of A4 and a ruler.</p>
   <div class="fold">
     <figure>
       <div class="stage" id="fold-stage"></div>
-      <figcaption>Figure 5. Front of the sheet light, back blue. The dashed red line is the next crease.</figcaption>
+      <figcaption>Front of the sheet light, back blue. The dashed red line is the next crease.</figcaption>
       <div class="player"><button id="f-prev" aria-label="Previous step">Previous</button><button id="f-play">Play</button><button id="f-next" aria-label="Next step">Next</button><div class="prog"><i id="f-prog"></i></div><span class="val" id="f-count"></span></div>
     </figure>
     <ol class="steps" id="fold-steps"></ol>
@@ -107,7 +111,7 @@
   <div class="diagrams" id="diagrams"></div>
 </div></section>
 
-<section id="together" class="view"><div class="wrap">
+<section class="view" data-view="together"><div class="wrap">
   <h2>Contribute</h2>
   <p class="sec-lede">You can help the search by leaving this page open. Your browser runs its own copy of the optimiser in the background and sends any improvement to a shared board. The server re-runs the simulation for every submitted design before it is listed.</p>
   <div class="together">
@@ -124,7 +128,7 @@
   </div>
 </div></section>
 
-<section id="hood" class="view"><div class="wrap">
+<section class="view" data-view="hood"><div class="wrap">
   <h2>Method</h2>
   <div class="hood">
     <div class="prose">
@@ -139,7 +143,7 @@
     <figure>
       <div class="chart-legend" id="polar-legend"></div>
       <div class="chart" id="polar-chart"></div>
-      <figcaption>Figure 6. Lift-to-drag ratio against body angle of attack at 6 m/s. The peak is roughly the distance travelled forward for each metre of height lost in a steady glide.</figcaption>
+      <figcaption>Lift-to-drag ratio against body angle of attack at 6 m/s. The peak is roughly the distance travelled forward for each metre of height lost in a steady glide.</figcaption>
     </figure>
   </div>
 </div></section>
