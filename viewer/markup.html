@@ -31,7 +31,7 @@
 </div></section>
 
 <section class="view" data-view="lab"><div class="wrap">
-  <div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div>
+  <div class="simbar"><div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div><label class="pick">Design <select class="sim-pick" aria-label="Design to simulate"></select></label></div>
   <h2>Flight simulation</h2>
   <p class="sec-lede">Both planes are thrown with the same speed and angle and simulated live in your browser. Pick one of the 16 test throws or set your own.</p>
   <div class="lab">
@@ -57,7 +57,7 @@
 </div></section>
 
 <section class="view" data-view="tunnel"><div class="wrap">
-  <div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div>
+  <div class="simbar"><div class="subtabs" role="tablist" aria-label="Simulate"><a href="#lab" data-sub="lab">Flight</a><a href="#tunnel" data-sub="tunnel">Wind tunnel</a></div><label class="pick">Design <select class="sim-pick" aria-label="Design to simulate"></select></label></div>
   <h2>Wind tunnel</h2>
   <p class="sec-lede">The plane is held still in a stream of air. The smoke moves with the air as the simulator computes it, including the swirl around each vortex panel. You can see the air pushed down behind the wing and the vortices trailing from the tips. Past the stall, the flow over the wing breaks up.</p>
   <div class="lab">
@@ -99,6 +99,7 @@
 </div></section>
 
 <section class="view" data-view="fold"><div class="wrap">
+  <div class="simbar"><span></span><label class="pick">Design <select class="sim-pick" aria-label="Design to fold"></select></label></div>
   <h2 id="fold-title">How to fold it</h2>
   <p class="sec-lede">Every measurement comes from the geometry the simulator flew. You need one sheet of A4 and a ruler.</p>
   <div class="fold">

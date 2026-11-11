@@ -174,6 +174,13 @@ table.sc tr:last-child td { border-bottom: 0; font-weight: 600; }
 .board button { border: 1px solid var(--rule); background: var(--paper); border-radius: 6px; padding: 3px 10px; font-size: 12px; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; z-index: 20; }
 
+/* Simulate: sub-page toggle and design picker */
+.simbar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.simbar .subtabs { margin-bottom: 0; }
+.pick { display: flex; gap: 10px; align-items: center; font-size: 0.88rem; color: var(--ink-2); min-width: 0; }
+.pick select { min-width: 0; max-width: 340px; }
+@media (max-width: 600px) { .pick { flex: 1 1 100%; } .pick select { flex: 1; max-width: none; } }
+
 /* sub-pages inside one nav item */
 .subtabs { display: inline-flex; gap: 2px; padding: 3px; background: var(--panel); border-radius: 8px; font-size: 0.85rem; margin-bottom: 22px; }
 .subtabs a { text-decoration: none; color: var(--ink-2); padding: 5px 12px; border-radius: 6px; }
