@@ -1,6 +1,6 @@
 # Bestfold
 
-Bestfold is an attempt to design the best paper plane in the world, by simulation, using only what a person can do with one sheet of paper: no tape, no cuts, no glue.
+Bestfold is an attempt to design the best paper plane in the world by simulation. Every design is folded by hand from a single sheet of A4 paper, and only folded: nothing is cut, taped or glued, so the folds have to hold the plane together.
 
 It takes an A4 sheet of 80 g/m² paper, folds it in a geometric fold engine, computes mass and aerodynamics from the folded layers, and flies the result in a six-degree-of-freedom simulator through 16 randomised throws. Designs that could not be folded or would not fly sensibly are rejected outright. The best design becomes a folding tutorial with measured step diagrams. The search runs offline, and also in visitors' browsers: anyone can leave the site open to help, and the server re-simulates every design they submit before accepting it.
 
@@ -65,7 +65,7 @@ The sheet is modelled as a set of convex facets. Each facet has a 2D rigid trans
   - **sandwiched:** it sits inside a valley-folded keel;
   - **free.**
 
-  Free flaps spring partly open in flight and add drag. A free flap larger than 4 cm² makes the design infeasible, because nothing (no tape) would hold it shut.
+  Free flaps spring partly open in flight and add drag. A free flap larger than 4 cm² makes the design infeasible, because only the folds could hold it shut.
 - **Phase B:** the flat, body-folded state is mapped to 3D: keel, wings at their dihedral, winglets and elevator.
 
 ### 3. Mass and aerodynamics: `src/physics.js`
