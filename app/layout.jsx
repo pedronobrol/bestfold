@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Betterfold',
+  title: 'Bestfold',
   description: 'Paper planes designed by simulation and folded by hand from one sheet of A4, with no tape, cuts or glue. Watch them fly, see the design search, learn to fold them, and help the search from your browser.',
 };
 

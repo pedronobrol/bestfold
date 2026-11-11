@@ -1,6 +1,6 @@
 // A tiny module bundler for the browser engine: each ES module runs in its own function scope and
 // its exports are bound by name. Used for the island Web Worker (public/island-worker.js) and the
-// single-file artifact (dist/betterfold.html), so neither depends on a framework's worker support.
+// single-file artifact (dist/bestfold.html), so neither depends on a framework's worker support.
 import { readFileSync } from 'node:fs';
 
 const root = new URL('../', import.meta.url);

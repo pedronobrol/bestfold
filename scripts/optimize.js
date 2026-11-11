@@ -3,7 +3,7 @@
 // successive-halving budget: every sketch gets a short run, the best third get longer runs, the
 // best ninth longer still.
 //
-// Usage: BETTERFOLD_WORKERS=4 node scripts/optimize.js [distance|hangtime] [rung0 evals] [seed]
+// Usage: BESTFOLD_WORKERS=4 node scripts/optimize.js [distance|hangtime] [rung0 evals] [seed]
 import { Worker } from 'node:worker_threads';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { cpus } from 'node:os';
@@ -28,7 +28,7 @@ const rand = () => {
 };
 
 // worker pool (default 4 workers to keep the machine cool)
-const NW = Math.max(1, Math.min(cpus().length - 1, +(process.env.BETTERFOLD_WORKERS || 4)));
+const NW = Math.max(1, Math.min(cpus().length - 1, +(process.env.BESTFOLD_WORKERS || 4)));
 const workers = [], queue = [], pending = new Map();
 let nextId = 0;
 for (let i = 0; i < NW; i++) {

@@ -6,7 +6,7 @@ import { getStore, allow } from '../../../lib/store.js';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const KEY = 'betterfold:presence';
+const KEY = 'bestfold:presence';
 
 export async function POST(req) {
   const ip = (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();

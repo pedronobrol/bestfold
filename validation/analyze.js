@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Betterfold real-throw validation: analysis of a throw-log.html CSV export against simulator predictions.
+// Bestfold real-throw validation: analysis of a throw-log.html CSV export against simulator predictions.
 //
 //   node analyze.js log.csv predictions.json [--metric distance|time] [--boot 2000] [--seed 1] [--nmax 3]
 //
@@ -83,7 +83,7 @@ function rng(seed) { // mulberry32
 //  * Drag polar CD = cdMul·CD0 + k·CL², k = 1/(π e AR). cdMul is the parameter being fitted; it scales
 //    only the zero-lift (profile + parasite) part, the same role as `cdMul` in src/evaluate.js.
 //  * Lift magnitude is capped at nMax·W. A fixed-CL point mass thrown at 2–3× trim speed would pull
-//    5–10 g and loop; real paper wings flex and wash out at high load (the reason Betterfold has flex
+//    5–10 g and loop; real paper wings flex and wash out at high load (the reason Bestfold has flex
 //    twins), so we crudely saturate the load factor. Results are sensitive to nMax — report it.
 //  * Still air, constant ρ = 1.2 kg/m³, release at `height`, flight ends at first ground contact (z = 0).
 //  * Launch speed/angle = measured medians for the design if logged, otherwise the simulated launch.

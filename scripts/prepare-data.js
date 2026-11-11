@@ -1,5 +1,5 @@
 // Turns optimiser output (results/<mission>.json) into the dataset the viewer ships with
-// (public/data/betterfold.json), and writes printable instructions and step diagrams to results/.
+// (public/data/bestfold.json), and writes printable instructions and step diagrams to results/.
 // Usage: node scripts/prepare-data.js [results dir]   (default: results)
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { MISSIONS, CLASSICS, completeDesign } from '../src/design.js';
@@ -9,8 +9,8 @@ import { stepDiagrams, diagramSheet } from '../src/template.js';
 import { ENGINE_VERSION } from '../src/version.js';
 
 const root = new URL('../', import.meta.url);
-const RES = process.argv[2] || process.env.BETTERFOLD_RESULTS || 'results';
-const NAMES = { distance: 'Betterfold D-1', hangtime: 'Betterfold H-1' };
+const RES = process.argv[2] || process.env.BESTFOLD_RESULTS || 'results';
+const NAMES = { distance: 'Bestfold D-1', hangtime: 'Bestfold H-1' };
 
 const missions = {};
 for (const key of Object.keys(MISSIONS)) {
@@ -46,5 +46,5 @@ for (const key of Object.keys(MISSIONS)) {
 }
 if (!Object.keys(missions).length) throw new Error(`no results found in ${RES}/; run the optimiser first`);
 mkdirSync(new URL('public/data/', root), { recursive: true });
-writeFileSync(new URL('public/data/betterfold.json', root), JSON.stringify({ engine: ENGINE_VERSION, missions }));
-console.log(`public/data/betterfold.json written (${Object.keys(missions).join(', ')})`);
+writeFileSync(new URL('public/data/bestfold.json', root), JSON.stringify({ engine: ENGINE_VERSION, missions }));
+console.log(`public/data/bestfold.json written (${Object.keys(missions).join(', ')})`);

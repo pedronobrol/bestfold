@@ -8,12 +8,12 @@ export default function Viewer({ markup }) {
     if (mounted.current) return; // React strict mode runs effects twice in development
     mounted.current = true;
     (async () => {
-      const [{ mountBetterfold }, { httpCommunity }, data] = await Promise.all([
+      const [{ mountBestfold }, { httpCommunity }, data] = await Promise.all([
         import('../viewer/app.js'),
         import('../viewer/community.js'),
-        fetch('/data/betterfold.json').then((r) => r.json()),
+        fetch('/data/bestfold.json').then((r) => r.json()),
       ]);
-      mountBetterfold({
+      mountBestfold({
         data,
         community: httpCommunity(),
         createWorker: () => new Worker('/island-worker.js'), // built by scripts/build-worker.js

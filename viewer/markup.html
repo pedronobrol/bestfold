@@ -1,11 +1,11 @@
 <header class="site"><div class="wrap bar">
-  <a class="name" href="#top">Betterfold</a>
+  <a class="name" href="#top">Bestfold</a>
   <nav aria-label="Sections"><a href="#lab">Flight</a><a href="#tunnel">Wind tunnel</a><a href="#evolution">Search</a><a href="#fold">Fold it</a><a href="#together">Contribute</a><a href="#hood">Method</a></nav>
 </div></header>
 
 <main id="top">
 <div class="wrap intro">
-  <h1>Betterfold</h1>
+  <h1>Bestfold</h1>
   <p class="sub">Paper planes designed by simulation and folded by hand from one sheet of A4. No tape, no cuts, no glue.</p>
   <div class="tabs" role="group" aria-label="Mission">
     <button id="m-distance" aria-pressed="true" data-mission="distance">Distance</button>
@@ -17,7 +17,7 @@
       <figcaption>Figure 1. The current best design. Drag to rotate.</figcaption>
     </figure>
     <div class="hero-text">
-      <h2 id="hero-title">Betterfold D-1</h2>
+      <h2 id="hero-title">Bestfold D-1</h2>
       <p id="hero-lede"></p>
       <table class="facts" id="hero-figs"></table>
       <p class="links"><a href="#fold">How to fold it</a> <a href="#lab">Watch it fly</a></p>
@@ -59,7 +59,7 @@
       <figcaption>Figure 3. True size. Drag to look around.</figcaption>
     </figure>
     <div class="panel">
-      <div class="tabs small" role="group" aria-label="Plane in the tunnel"><button data-tplane="champ" aria-pressed="true" id="tp-champ">Betterfold</button><button data-tplane="dart" aria-pressed="false" id="tp-dart">Classic dart</button></div>
+      <div class="tabs small" role="group" aria-label="Plane in the tunnel"><button data-tplane="champ" aria-pressed="true" id="tp-champ">Bestfold</button><button data-tplane="dart" aria-pressed="false" id="tp-dart">Classic dart</button></div>
       <div class="ctl"><label for="t-alpha">Angle of attack <span class="val" id="t-alpha-v"></span></label><input type="range" id="t-alpha" min="-6" max="40" step="0.5" value="6"></div>
       <div class="ctl"><label for="t-speed">Airspeed <span class="val" id="t-speed-v"></span></label><input type="range" id="t-speed" min="2" max="16" step="0.5" value="6"></div>
       <div class="ctl"><label for="t-beta">Sideslip <span class="val" id="t-beta-v"></span></label><input type="range" id="t-beta" min="-20" max="20" step="1" value="0"></div>
@@ -134,7 +134,7 @@
       <p><strong>Flight.</strong> A six-degree-of-freedom simulation in 4 ms steps, including the air the plane has to push aside. Creases act as springs, so the wings rise under load. An energy check stops any flight that gains energy.</p>
       <p><strong>Trim and launch.</strong> The elevator angle and the launch angle are worked out for each plane, the way you would adjust and throw a real one.</p>
       <p><strong>Search.</strong> The optimiser keeps the best plane of each type (sheet orientation, sequence of folds, winglets) and improves each with CMA-ES, spending more time on the promising types.</p>
-      <p>Details, limitations and references are in the <a href="https://github.com/pedronobrol/betterfold">source repository</a>.</p>
+      <p>Details, limitations and references are in the <a href="https://github.com/pedronobrol/bestfold">source repository</a>.</p>
     </div>
     <figure>
       <div class="chart-legend" id="polar-legend"></div>
@@ -146,4 +146,4 @@
 </main>
 
 <div class="toast" id="toast" role="status" hidden></div>
-<footer class="site"><div class="wrap">Betterfold is the continuation of Aviato, a project started in 2021. These are simulation results: real paper flexes and varies, so trim the elevator after a few test throws. <a href="https://github.com/pedronobrol/betterfold">Source</a></div></footer>
+<footer class="site"><div class="wrap">Bestfold is the continuation of Aviato, a project started in 2021. These are simulation results: real paper flexes and varies, so trim the elevator after a few test throws. <a href="https://github.com/pedronobrol/bestfold">Source</a></div></footer>

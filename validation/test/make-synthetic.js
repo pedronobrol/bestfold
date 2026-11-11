@@ -10,7 +10,7 @@ const gauss = () => Math.sqrt(-2 * Math.log(rand() + 1e-12)) * Math.cos(2 * Math
 
 const designs = {
   D1: { label: 'Classic dart', mass_g: 5.0, S_m2: 0.016, CLtrim: 0.18, CD0: 0.05, AR: 1.1 },
-  D2: { label: 'Betterfold champion', mass_g: 5.1, S_m2: 0.022, CLtrim: 0.30, CD0: 0.035, AR: 2.0 },
+  D2: { label: 'Bestfold champion', mass_g: 5.1, S_m2: 0.022, CLtrim: 0.30, CD0: 0.035, AR: 2.0 },
   D3: { label: 'Elite wide', mass_g: 5.0, S_m2: 0.024, CLtrim: 0.35, CD0: 0.04, AR: 2.4 },
   D4: { label: 'Elite canard', mass_g: 5.2, S_m2: 0.020, CLtrim: 0.26, CD0: 0.045, AR: 1.6 },
   D5: { label: 'Nakamura lock', mass_g: 5.0, S_m2: 0.019, CLtrim: 0.24, CD0: 0.05, AR: 1.4 },

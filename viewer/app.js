@@ -1,4 +1,4 @@
-// Betterfold viewer: hero, flight lab, wind tunnel, evolution explorer, folding tutorial and the
+// Bestfold viewer: hero, flight lab, wind tunnel, evolution explorer, folding tutorial and the
 // "Fly together" volunteer search. Framework-free; mounted by the Next.js page (app/Viewer.jsx)
 // or by the single-file artifact build (scripts/build-artifact.js).
 import * as THREE from 'three';
@@ -16,7 +16,7 @@ import { ENGINE_VERSION } from '../src/version.js';
 
 // data: results (see lib/results.js); community: viewer/community.js backend;
 // createWorker(): a Web Worker running viewer/island-worker.js.
-export function mountBetterfold({ data, community, createWorker }) {
+export function mountBestfold({ data, community, createWorker }) {
 const DATA = data;
 const DEG = Math.PI / 180;
 const $ = (s) => document.querySelector(s);
@@ -236,7 +236,7 @@ let heroPaper = null;
 function renderHero(m) {
   $('#hero-loading').hidden = true;
   const d = m.design, c = m.champ, u = unitOf(m);
-  const name = m.key === 'distance' ? 'Betterfold D-1' : 'Betterfold H-1';
+  const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
   $('#hero-title').textContent = name;
   const steps = m.instr.length - 1;
   const what = m.key === 'distance' ? 'distance' : 'time aloft';
@@ -422,7 +422,7 @@ function setupLab(m) {
   for (const r of labState.runs) { lab.scene.remove(r.root); lab.scene.remove(r.trail); r.tipTrails.forEach((t) => lab.scene.remove(t.line)); }
   buildLabScene();
   labState.runs = [
-    { ...makeRun(m.champ.geom, m.champ.ac, () => THEME.valley), name: m.key === 'distance' ? 'Betterfold D-1' : 'Betterfold H-1', dot: 'v', which: 'champ' },
+    { ...makeRun(m.champ.geom, m.champ.ac, () => THEME.valley), name: m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1', dot: 'v', which: 'champ' },
     { ...makeRun(m.dart.geom, m.dart.ac, () => THEME.mountain), name: 'Classic dart', dot: 'm', which: 'dart' },
   ];
   const sel = $('#lab-scn');
@@ -541,7 +541,7 @@ document.querySelectorAll('.views button').forEach((b) => b.addEventListener('cl
   document.querySelectorAll('.views button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
 }));
 function renderScenarioTable(m) {
-  const u = unitOf(m), name = m.key === 'distance' ? 'Betterfold D-1' : 'Betterfold H-1';
+  const u = unitOf(m), name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
   const cell = (r) => `${fmt(r.metric)} ${u}${r.end === 'tumbling' ? ' · tumbled' : ''}`;
   const rows = [`<tr><td>${NOMINAL.name}</td><td class="n">${cell(m.champ.nominal)}</td><td class="n">${cell(m.dart.nominal)}</td></tr>`,
     ...SCENARIOS.map((s, i) => `<tr><td>${s.name}</td><td class="n">${m.champ.results[i] ? cell(m.champ.results[i]) : '–'}</td><td class="n">${m.dart.results[i] ? cell(m.dart.results[i]) : '–'}</td></tr>`)].join('');
@@ -824,7 +824,7 @@ function setupFold(m) {
   F.crease = new THREE.LineSegments(new THREE.BufferGeometry(), cm);
   F.crease.renderOrder = 10;
   F.paper.group.add(F.crease);
-  $('#fold-title').textContent = `How to fold ${m.key === 'distance' ? 'Betterfold D-1' : 'Betterfold H-1'}`;
+  $('#fold-title').textContent = `How to fold ${m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1'}`;
   $('#fold-steps').innerHTML = m.instr.map((s, i) => `<li><button data-i="${i}"><span><span class="st">${s.title}</span><span class="sx">${s.text}</span></span></button></li>`).join('');
   document.querySelectorAll('#fold-steps button').forEach((b) => b.addEventListener('click', () => goStep(+b.dataset.i, true)));
   const sheet = m.design.sheet;
@@ -922,7 +922,7 @@ $('#f-prev').addEventListener('click', () => { F.autoplay = false; goStep(F.i - 
 $('#f-next').addEventListener('click', () => { F.autoplay = false; goStep(F.i + 1, true); });
 $('#f-play').addEventListener('click', () => { F.autoplay = true; goStep(F.i >= F.m.instr.length - 1 ? 0 : F.i, true); });
 function renderTemplate(m) {
-  const name = m.key === 'distance' ? 'Betterfold D-1' : 'Betterfold H-1';
+  const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
   const diags = stepDiagrams(m.champ.geom, m.instr, { cgX: m.champ.ac.cg[0], colors: { paper: css('--sheet'), back: css('--sheet-back'), edge: css('--ink-3'), grip: css('--valley') } });
   $('#diagrams').innerHTML = diags.map((d) => `<figure class="diagram" style="margin:0"><figcaption class="dh"><b>${d.num}</b><span>${d.title}</span></figcaption><div class="dv">${d.svg.replace(/ width="[\d.]+mm" height="[\d.]+mm"/, '')}</div></figure>`).join('');
   m.templateSvg = diagramSheet(stepDiagrams(m.champ.geom, m.instr, { cgX: m.champ.ac.cg[0] }), name);
@@ -953,7 +953,7 @@ function drawPolar(m) {
   }
   s += '</svg>';
   $('#polar-chart').innerHTML = s;
-  $('#polar-legend').innerHTML = `<span><span class="dot v"></span> Betterfold ${name}</span><span><span class="dot m"></span> Classic dart</span>`;
+  $('#polar-legend').innerHTML = `<span><span class="dot v"></span> Bestfold ${name}</span><span><span class="dot m"></span> Classic dart</span>`;
 }
 
 // ---------------- mission switching ----------------

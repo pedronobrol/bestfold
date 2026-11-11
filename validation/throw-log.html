@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Betterfold Throw Log</title>
-<meta name="description" content="Offline logger for Betterfold paper-plane validation throws: log, measure launch from video frames, summarise and compare with predictions.">
+<title>Bestfold Throw Log</title>
+<meta name="description" content="Offline logger for Bestfold paper-plane validation throws: log, measure launch from video frames, summarise and compare with predictions.">
 <style>
 :root {
   --bg: #f6f5f1; --surface: #ffffff; --surface-2: #efede7; --text: #1d1d1b; --muted: #66645e;
@@ -100,7 +100,7 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
 <body>
 <header>
   <div class="bar">
-    <h1>Betterfold throw log <small id="count">0 throws</small></h1>
+    <h1>Bestfold throw log <small id="count">0 throws</small></h1>
     <nav role="tablist" aria-label="Sections">
       <button role="tab" id="t-log" aria-controls="p-log" aria-selected="true">Log</button>
       <button role="tab" id="t-measure" aria-controls="p-measure" aria-selected="false">Measure</button>
@@ -236,7 +236,7 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
   <div class="card">
     <h2>Compare with predictions <span class="hint">paste after throwing, not before</span></h2>
     <label for="predJson">Predictions JSON</label>
-    <textarea id="predJson" spellcheck="false" placeholder='{"mission":"distance","designs":{"D1":{"label":"Classic dart","distance":7.4,"time":1.7},"D2":{"label":"Betterfold champion","distance":12.1,"time":2.4}}}'></textarea>
+    <textarea id="predJson" spellcheck="false" placeholder='{"mission":"distance","designs":{"D1":{"label":"Classic dart","distance":7.4,"time":1.7},"D2":{"label":"Bestfold champion","distance":12.1,"time":2.4}}}'></textarea>
     <p class="err" id="predErr" role="alert"></p>
     <div class="table-wrap"><table id="cmpTable"><caption class="sr">Predicted versus measured</caption></table></div>
     <div id="cmpOut" aria-live="polite"></div>
@@ -283,7 +283,7 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
 <script>
 (() => {
   'use strict';
-  const KEY = 'betterfold-throwlog-v1', SKEY = 'betterfold-throwlog-session-v1', PKEY = 'betterfold-throwlog-pred-v1';
+  const KEY = 'bestfold-throwlog-v1', SKEY = 'bestfold-throwlog-session-v1', PKEY = 'bestfold-throwlog-pred-v1';
   const COLS = ['id','session','timestamp','design','copy','thrower','mission','kind','throw_no','speed_ms','angle_deg','alpha_deg','distance_m','time_s','ld','outcome','notes','temp_c','rh_pct','paper','venue'];
   const OUTCOMES = [
     ['glide', 'Glide', '--c-glide'], ['nose-dive', 'Nose-dive', '--c-dive'], ['stall-recovery', 'Stall-recovery', '--c-stall'],
@@ -388,8 +388,8 @@ details summary { cursor: pointer; font-weight: 600; font-size: .9rem; }
 
   // ---------- measure ----------
   const MKEYS = ['m_fps', 'm_refm', 'm_refpx', 'm_r1x', 'm_r1y', 'm_r2x', 'm_r2y', 'm_f0', 'm_n0x', 'm_n0y', 'm_t0x', 'm_t0y', 'm_f1', 'm_n1x', 'm_n1y', 'g_f1', 'g_x1', 'g_y1', 'g_f2', 'g_x2', 'g_y2'];
-  const mstate = load('betterfold-throwlog-measure-v1', {});
-  MKEYS.forEach((k) => { if (mstate[k] !== undefined && mstate[k] !== '') $(k).value = mstate[k]; $(k).addEventListener('input', () => { mstate[k] = $(k).value; save('betterfold-throwlog-measure-v1', mstate); computeMeasure(); }); });
+  const mstate = load('bestfold-throwlog-measure-v1', {});
+  MKEYS.forEach((k) => { if (mstate[k] !== undefined && mstate[k] !== '') $(k).value = mstate[k]; $(k).addEventListener('input', () => { mstate[k] = $(k).value; save('bestfold-throwlog-measure-v1', mstate); computeMeasure(); }); });
   const v = (id) => num($(id).value);
   function scale() { // metres per pixel
     let px = v('m_refpx');

@@ -1,8 +1,8 @@
 # References
 
-These are the external works that Betterfold's engine and design rely on. Most entries come from the project's literature review (`reports/Computational paper plane design.md`), its research notes (`research_notes/Computational paper plane design/*.md`) and the two design reviews (`.../reviews/`); the section *Standard methods used in the code* lists textbook methods the implementation follows directly.
+These are the external works that Bestfold's engine and design rely on. Most entries come from the project's literature review (`reports/Computational paper plane design.md`), its research notes (`research_notes/Computational paper plane design/*.md`) and the two design reviews (`.../reviews/`); the section *Standard methods used in the code* lists textbook methods the implementation follows directly.
 
-Each entry ends with a **Used for** line. It says what Betterfold takes from the work and where. "Background" means the work shaped a design decision but is not implemented directly.
+Each entry ends with a **Used for** line. It says what Bestfold takes from the work and where. "Background" means the work shaped a design decision but is not implemented directly.
 
 Entries marked **[unverified: …]** have a bibliographic detail that could not be confirmed against a publisher or indexing page. The marker says which detail.
 
@@ -12,7 +12,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* the one-layer, some-layers and all-layers simple-fold models. `src/fold.js` implements all-layer folds and some-layer folds (`foldLayers`).
 
 - Bern, M., & Hayes, B. (1996). The complexity of flat origami. In *Proceedings of the 7th Annual ACM-SIAM Symposium on Discrete Algorithms (SODA '96)*, 175–183.
-  *Used for:* background. Global flat-foldability is NP-hard, so Betterfold generates fold *sequences* forward instead of searching crease patterns (`src/fold.js`, `src/sketch.js`).
+  *Used for:* background. Global flat-foldability is NP-hard, so Bestfold generates fold *sequences* forward instead of searching crease patterns (`src/fold.js`, `src/sketch.js`).
 
 - Akitaya, H. A., Cheung, K. C., Demaine, E. D., Horiyama, T., Hull, T. C., Ku, J. S., Tachi, T., & Uehara, R. (2016). Box pleating is hard. In *Discrete and Computational Geometry and Graphs (JCDCGG 2015)*, LNCS 9943, 167–179. Springer. https://scripts.mit.edu/~jasonku/pdf/BOXPLEATINGHARD_JCDCGG2015.pdf
   *Used for:* background. It is part of the same argument for forward generation over crease-pattern search.
@@ -37,7 +37,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
 ## Prior computational design of paper planes
 
 - Umetani, N., Koyama, Y., Schmidt, R., & Igarashi, T. (2014). Pteromys: Interactive design and optimization of free-formed free-flight model airplanes. *ACM Transactions on Graphics (SIGGRAPH 2014)*, 33(4), Article 65. https://doi.org/10.1145/2601097.2601129
-  *Used for:* background. It is evidence that earlier work optimised flat gliders, not fold sequences, and so it frames Betterfold's fold-sequence search space.
+  *Used for:* background. It is evidence that earlier work optimised flat gliders, not fold sequences, and so it frames Bestfold's fold-sequence search space.
 
 - Liu, R., Liang, J., Sudhakar, S., Ha, H., Chi, C., Song, S., & Vondrick, C. (2024). PaperBot: Learning to design real-world tools using paper. arXiv:2403.09566. https://paperbot.cs.columbia.edu/
   *Used for:* background. Real-world-only search works with about 5 parameters, which is why the simulator does the searching and real throws do the judging (`docs/VALIDATION.md`).
@@ -93,7 +93,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* the original statement of the analogy that TN D-6243 tabulates. It is cited through Ananda et al. 2015.
 
 - Lamar, J. E. (1974). *Extension of leading-edge-suction analogy to wings with separated flow around the side edges at subsonic speeds*. NASA TR R-428. https://ntrs.nasa.gov/citations/19740026346 (the research notes link NTRS 19740011530, which is a different report)
-  *Used for:* background. The suction analogy can be extended to side edges. Betterfold applies vortex lift by leading-edge sweep only (`vortexK` in `latticeFromRows`).
+  *Used for:* background. The suction analogy can be extended to side edges. Bestfold applies vortex lift by leading-edge sweep only (`vortexK` in `latticeFromRows`).
 
 - Traub, L. W., Moeller, B., & Rediniotis, O. Low-Reynolds-number effects on delta-wing aerodynamics. *Journal of Aircraft*. Cited through Ng et al. (2009). **[unverified: year, volume, pages]**
   *Used for:* evidence that sharp-edged delta lift barely depends on Re down to Re 60 000. This is what makes the Polhamus targets applicable at paper-plane Reynolds numbers.
@@ -107,7 +107,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* evidence that creases creep and lose their rest angle. This motivated the symmetric-dihedral error of ±6° in the folding-error copies (`GEOS`, `src/evaluate.js`). Creep itself is not modelled.
 
 - Lechenault, F., Thiria, B., & Adda-Bedia, M. (2014). Mechanical response of a creased sheet. *Physical Review Letters*, 112, 244301. https://doi.org/10.1103/PhysRevLett.112.244301
-  *Used for:* the separation of panel bending from crease-hinge stiffness. Betterfold keeps panels rigid and puts all flex in crease springs (`withFlex`, `src/evaluate.js`).
+  *Used for:* the separation of panel bending from crease-hinge stiffness. Bestfold keeps panels rigid and puts all flex in crease springs (`withFlex`, `src/evaluate.js`).
 
 - Filipov, E. T., Liu, K., Tachi, T., Schenk, M., & Paulino, G. H. (2017). Bar and hinge models for scalable analysis of origami. *International Journal of Solids and Structures*, 124, 26–45. https://doi.org/10.1016/j.ijsolstr.2017.05.028
   *Used for:* background. A bar-and-hinge solve was considered and deferred. The design reviews recommended root-crease springs in the loop instead (`docs/PLAN.md`, step 7).
@@ -121,7 +121,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
 ## Launch, records and design practice
 
 - Guinness World Records (2026). Evolution of the paper plane flight and how far it's actually possible to throw one. https://www.guinnessworldrecords.com/news/2026/5/evolution-of-the-paper-plane-flight-and-how-far-its-actually-possible-to-throw-one. See also the record pages "Farthest flight by a paper aircraft" and "Longest time flying a paper aircraft" (guinnessworldrecords.com, guinnessworldrecords.jp).
-  *Used for:* the record rules, which allow a 25 × 30 mm tape piece and cuts, and the record targets. Betterfold's no-tape, no-cut rule is stricter. That stricter rule is why flap retention and locks are modelled (`src/retention.js`).
+  *Used for:* the record rules, which allow a 25 × 30 mm tape piece and cuts, and the record targets. Bestfold's no-tape, no-cut rule is stricter. That stricter rule is why flap retention and locks are modelled (`src/retention.js`).
 
 - Fold'N Fly. World record paper airplanes. https://www.foldnfly.com/lounge/world-record-paper-airplanes.php
   *Used for:* two things:
@@ -132,7 +132,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* evidence that record distance planes used many tape strips to keep layers shut at launch speed. This is why the 4 cm² free-flap limit and the launch-load wing check exist (`prepare` in `src/evaluate.js`).
 
 - Make: (2010). Paper airplane flight-time record (Takuo Toda, 26.1 s with an uncut, untaped sheet). https://makezine.com/article/home/fun-games/paper-airplane-flight-time-record-a
-  *Used for:* the like-for-like hang-time benchmark under Betterfold's rules (README and report).
+  *Used for:* the like-for-like hang-time benchmark under Bestfold's rules (README and report).
 
 - Freethink. How Boeing engineers broke the paper plane distance record. https://www.freethink.com/science/paper-plane-distance-record. Also UPI (2023-03-01), https://www.upi.com/Odd_News/2023/03/01/Guinness-World-Records-farthest-flight-paper-aircraft/6171677705180/ **[unverified: Freethink article title]**
   *Used for:* the Mach 5 launch at about 40°. It set the upper end of the distance pitch range (`pitchRange` up to 45° in `src/design.js`).
@@ -158,7 +158,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* the MAP-Elites archive with one elite per sketch (`scripts/optimize.js`, `viewer/island-worker.js`).
 
 - Hansen, N. (2009). Benchmarking a BI-population CMA-ES on the BBOB-2009 function testbed. In *GECCO '09 Companion (Workshop on Black-Box Optimization Benchmarking)*, 2389–2396. https://doi.org/10.1145/1570256.1570333
-  *Used for:* restart strategies for CMA-ES. Betterfold uses the IPOP-style part: a restart doubles λ when progress stalls (`runNiche` in `scripts/optimize.js`).
+  *Used for:* restart strategies for CMA-ES. Bestfold uses the IPOP-style part: a restart doubles λ when progress stalls (`runNiche` in `scripts/optimize.js`).
 
 - Auger, A., & Hansen, N. (2005). A restart CMA evolution strategy with increasing population size. In *2005 IEEE Congress on Evolutionary Computation (CEC)*, 1769–1776. https://doi.org/10.1109/CEC.2005.1554902
   *Used for:* the same IPOP restart rule (`scripts/optimize.js`). The CMA-ES itself is in `src/cmaes.js`.
@@ -170,7 +170,7 @@ Entries marked **[unverified: …]** have a bibliographic detail that could not 
   *Used for:* background. L-SHADE was the recommended comparison baseline for the search (`docs/PLAN.md`, step 9). It is not implemented yet.
 
 - Hutter, F., Hoos, H., & Leyton-Brown, K. (2013). An evaluation of sequential model-based optimization for expensive blackbox functions. In *GECCO '13 Companion (BBOB workshop)*, 1209–1216. https://doi.org/10.1145/2464576.2501592
-  *Used for:* the decision not to use a surrogate model. At Betterfold's evaluation budget, population methods are the better fit.
+  *Used for:* the decision not to use a surrogate model. At Bestfold's evaluation budget, population methods are the better fit.
 
 - Deb, K. (2000). An efficient constraint handling method for genetic algorithms. *Computer Methods in Applied Mechanics and Engineering*, 186(2–4), 311–338. https://doi.org/10.1016/S0045-7825(99)00389-8
   *Used for:* the feasibility rules. Feasible beats infeasible, and infeasible designs rank by total graded violation and are never flown (`prepare` and `evaluate` in `src/evaluate.js`, where infeasible fitness is −1 − violation).
@@ -228,7 +228,7 @@ These shape `docs/VALIDATION.md`, `validation/throw-log.html` and `validation/an
 ## Software and tools
 
 - Ku, J. S. *Flat-Folder* (JavaScript, MIT licence). https://github.com/origamimagiro/flat-folder
-  *Used for:* the reference implementation of layer-order checking, which `layerOrderViolations` (`src/retention.js`) follows in spirit. No code was copied, and Betterfold has no dependency on it.
+  *Used for:* the reference implementation of layer-order checking, which `layerOrderViolations` (`src/retention.js`) follows in spirit. No code was copied, and Bestfold has no dependency on it.
 
 - Kraft, R. *Rabbit Ear* (JavaScript origami library, GPL-3.0). https://github.com/rabbit-ear/rabbit-ear
   *Used for:* background. It was evaluated and not used.
@@ -237,7 +237,7 @@ These shape `docs/VALIDATION.md`, `validation/throw-log.html` and `validation/an
   *Used for:* background, for the deferred bar-and-hinge option (see Filipov et al. and Ghassaei et al. above).
 
 - DEAP: BIPOP-CMA-ES example. https://deap.readthedocs.io/en/master/examples/bipop_cmaes.html
-  *Used for:* the reference for the restart scheme (`scripts/optimize.js`). Betterfold has its own dependency-free CMA-ES (`src/cmaes.js`).
+  *Used for:* the reference for the restart scheme (`scripts/optimize.js`). Bestfold has its own dependency-free CMA-ES (`src/cmaes.js`).
 
 - three.js (MIT licence). https://threejs.org/
   *Used for:* 3D rendering in the viewer (`viewer/app.js`).

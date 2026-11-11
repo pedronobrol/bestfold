@@ -22,8 +22,8 @@ const POLL_MS = 20000;
 export function httpCommunity(base = '') {
   const id = (() => {
     try {
-      let v = localStorage.getItem('betterfold-id');
-      if (!v) { v = 'anon-' + Math.random().toString(36).slice(2, 12); localStorage.setItem('betterfold-id', v); }
+      let v = localStorage.getItem('bestfold-id');
+      if (!v) { v = 'anon-' + Math.random().toString(36).slice(2, 12); localStorage.setItem('bestfold-id', v); }
       return v;
     } catch { return 'anon-' + Math.random().toString(36).slice(2, 12); }
   })();
