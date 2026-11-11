@@ -123,9 +123,27 @@
       <p class="note" id="t-note">It runs while this tab is open, and you can stop it at any time. Results count for the mission selected above.</p>
     </div>
     <div class="board">
-      <div class="tbl"><table class="sc" id="t-board"><thead><tr><th>#</th><th>Found by</th><th class="n">Score</th><th class="n">Checked</th><th></th></tr></thead><tbody><tr><td colspan="5" class="muted">No shared designs yet.</td></tr></tbody></table></div>
+      <div class="list-head"><h3>Found by contributors</h3><a class="seeall" href="#designs" id="t-seeall">See all designs</a></div>
+      <div class="dlist" id="t-board"><p class="empty">No contributions yet. Start contributing to post the first one.</p></div>
     </div>
   </div>
+</div></section>
+
+<section class="view" data-view="designs"><div class="wrap">
+  <a class="back" href="#together">Contribute</a>
+  <h2>All designs</h2>
+  <p class="sec-lede" id="d-lede">The best plane of every type found by the search and by contributors.</p>
+  <div class="filters">
+    <input type="search" id="d-q" placeholder="Search by name" aria-label="Search by name" autocomplete="off">
+    <select id="d-sheet" aria-label="Sheet"><option value="">Any sheet</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
+    <select id="d-wing" aria-label="Winglets"><option value="">Winglets or not</option><option value="yes">With winglets</option><option value="no">Without winglets</option></select>
+    <select id="d-folds" aria-label="Nose folds"><option value="">Any number of folds</option><option value="0">No nose folds</option><option value="1">1 nose fold</option><option value="2">2 nose folds</option><option value="3">3 nose folds</option><option value="4">4 nose folds</option></select>
+    <select id="d-src" aria-label="Found by"><option value="">Found by anyone</option><option value="search">Found by the search</option><option value="community">Found by contributors</option></select>
+    <select id="d-sort" aria-label="Sort"><option value="score">Best score</option><option value="span">Widest span</option><option value="area">Largest wing</option><option value="new">Newest</option></select>
+  </div>
+  <p class="count" id="d-count"></p>
+  <div class="dlist" id="d-list"></div>
+  <button class="btn quiet more" id="d-more" hidden>Show more</button>
 </div></section>
 
 <section class="view" data-view="hood"><div class="wrap">

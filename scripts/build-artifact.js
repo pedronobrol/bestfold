@@ -10,7 +10,7 @@ const THREE_VERSION = '0.186.1';
 // The page needs the engine too (the viewer imports it); its bindings share one scope with the viewer.
 const engine = engineBundle();
 const { wrap } = createBundler();
-const viewer = wrap('community', read('viewer/community.js')) + wrap('app', read('viewer/app.js'));
+const viewer = wrap('community', read('viewer/community.js')) + wrap('names', read('viewer/names.js')) + wrap('app', read('viewer/app.js'));
 const data = read('public/data/bestfold.json');
 
 const page = `${read('viewer/head.html')}<style>
