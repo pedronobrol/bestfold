@@ -1,4 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "www.bestfold.org" }], "destination": "https://bestfold.org/$1", "permanent": true }
+  ]
 }

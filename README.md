@@ -1,4 +1,4 @@
-# Bestfold
+# <img src="public/logo.svg" width="36" alt="" align="top"> Bestfold
 
 Bestfold is an attempt to design the best paper plane in the world by simulation. Every design is folded by hand from a single sheet of A4 paper, and only folded: nothing is cut, taped or glued, so the folds have to hold the plane together.
 
