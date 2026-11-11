@@ -72,11 +72,6 @@ footer.site { border-top: 1px solid var(--rule); margin-top: 0; padding-block: 2
 .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .tabs.small { margin-top: 0; justify-self: start; }
 .hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 36px; margin-top: 28px; align-items: start; }
-.guide { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 32px; margin: 44px 0 0; padding-top: 28px; border-top: 1px solid var(--rule); }
-.guide dt { font-family: var(--f-ui); font-weight: 600; font-size: 0.95rem; }
-.guide dt a { text-decoration: none; }
-.guide dt a:hover { text-decoration: underline; }
-.guide dd { margin: 4px 0 0; color: var(--ink-2); font-size: 0.95rem; line-height: 1.5; }
 .hero-text { display: grid; gap: 14px; padding-top: 6px; }
 .hero-text p { max-width: 62ch; }
 .facts { border-collapse: collapse; font-family: var(--f-ui); font-size: 0.9rem; width: 100%; }
@@ -189,8 +184,7 @@ table.sc tr:last-child td { border-bottom-color: var(--ink-3); }
 
 @media (max-width: 900px) {
   .hero, .lab, .evo, .fold, .hood, .together { grid-template-columns: minmax(0, 1fr); }
-  .guide { grid-template-columns: minmax(0, 1fr); }
-  .bar { flex-wrap: wrap; }
+    .bar { flex-wrap: wrap; }
   .bar nav { order: 3; flex-basis: 100%; }
   .lab .stage, .tunnel-stage { height: 360px; }
   h1 { font-size: 2.1rem; }
