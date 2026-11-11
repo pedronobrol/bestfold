@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Bestfold',
+  title: "Bestfold: building the world's best paper plane, together",
   description: 'Paper planes designed by simulation and folded by hand from a single sheet of A4. Watch them fly, follow the design search, learn to fold them, and help the search from your browser.',
 };
 

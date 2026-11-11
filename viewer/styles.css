@@ -21,7 +21,7 @@
 body { background: var(--paper); color: var(--ink); font-family: var(--f-ui); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 .wrap { max-width: 1180px; margin: 0 auto; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; margin: 0; text-wrap: balance; }
-h1 { font-size: clamp(2.2rem, 4.4vw, 3.4rem); letter-spacing: -0.035em; }
+h1 { font-size: clamp(1.75rem, 3vw, 2.35rem); letter-spacing: -0.03em; }
 h2 { font-size: 1.75rem; }
 h3 { font-size: 1.15rem; margin-top: 48px; }
 p { margin: 0; }
@@ -59,8 +59,8 @@ section { padding-block: 56px 72px; }
 
 /* overview */
 .intro { padding-block: 24px 0; }
-.intro h1 { max-width: 16ch; }
-.intro .sub { font-size: 1.1rem; color: var(--ink-2); margin-top: 16px; max-width: 48ch; }
+.intro h1 { max-width: 20ch; }
+.intro .sub { font-size: 1.02rem; color: var(--ink-2); margin-top: -6px; max-width: 52ch; }
 .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; margin-top: 8px; align-items: center; }
 .hero-text { display: grid; gap: 22px; align-content: start; }
 .hero-text h2 { font-size: 1.05rem; font-weight: 500; color: var(--ink-2); letter-spacing: -0.01em; }
@@ -185,7 +185,20 @@ footer.site { border-top: 1px solid var(--rule); padding-block: 28px 48px; font-
   .hero, .lab, .evo, .fold, .hood, .together { grid-template-columns: minmax(0, 1fr); }
   .lab .stage, .tunnel-stage { height: 380px; }
   .bar { flex-wrap: wrap; height: auto; padding-block: 10px; }
-  .bar nav { order: 3; flex-basis: 100%; }
-  .fig-hero { order: -1; }
+  .bar nav { order: 3; flex-basis: 100%; margin: 0 -6px; mask-image: linear-gradient(to right, #000 85%, transparent); -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); }
+  /* on phones: headline, then the plane, then the numbers */
+  .hero { display: flex; flex-direction: column; align-items: stretch; gap: 22px; }
+  .hero-text { display: contents; }
+  .hero-text h1 { order: 1; }
+  .hero-text .sub { order: 2; margin-top: -10px; }
+  .fig-hero { order: 3; }
+  .fig-hero .stage { aspect-ratio: 4 / 3; }
+  .hero-text h2 { order: 4; }
+  .headline { order: 5; }
+  .compare { order: 6; }
+  .facts { order: 7; }
+  .actions { order: 8; }
+  section { padding-block: 32px 56px; }
+  .sec-lede { margin-bottom: 24px; }
 }
 @media (max-width: 600px) { .aero-key { display: none; } .facts { grid-template-columns: minmax(0, 1fr); } }
