@@ -50,31 +50,39 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { re
 
 // ---------------- stages (renderers) ----------------
 const stages = [];
+// A stage's WebGL renderer is created the first time its view is on screen, so a page never holds
+// more GPU contexts than the views someone has opened (phones allow only a few).
 function makeStage(el, { fov = 35, controls = true } = {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(2, devicePixelRatio));
-  el.prepend(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(fov, 1, 0.01, 500);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8f99, 1.7));
   const sun = new THREE.DirectionalLight(0xffffff, 1.6);
   sun.position.set(3, 6, 4);
   scene.add(sun);
-  const st = { el, renderer, scene, camera, visible: true, tick: null };
+  const st = { el, renderer: null, scene, camera, visible: false, tick: null };
   if (controls) {
-    st.controls = new OrbitControls(camera, renderer.domElement);
+    st.controls = new OrbitControls(camera);
     st.controls.enableDamping = true;
     st.controls.enablePan = false;
   }
   const resize = () => {
+    if (!st.renderer) return;
     const w = el.clientWidth, h = el.clientHeight || w * 0.75;
-    renderer.setSize(w, h, false);
+    if (!w || !h) return;
+    st.renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   };
+  const ensure = () => {
+    if (st.renderer) return;
+    st.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    st.renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+    el.prepend(st.renderer.domElement);
+    if (st.controls) st.controls.connect(st.renderer.domElement);
+    resize();
+  };
   new ResizeObserver(resize).observe(el);
-  resize();
-  new IntersectionObserver((e) => { st.visible = e[0].isIntersecting; }).observe(el);
+  new IntersectionObserver((e) => { st.visible = e[0].isIntersecting; if (st.visible) ensure(); }).observe(el);
   stages.push(st);
   return st;
 }
@@ -83,7 +91,7 @@ function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   for (const s of stages) {
-    if (!s.visible) continue;
+    if (!s.visible || !s.renderer) continue;
     if (s.tick) s.tick(dt);
     if (s.controls) s.controls.update();
     s.renderer.render(s.scene, s.camera);
@@ -239,7 +247,7 @@ function renderHero(m) {
   const name = m.key === 'distance' ? 'Bestfold D-1' : 'Bestfold H-1';
   const what = m.key === 'distance' ? 'distance' : 'time aloft';
   $('#hero-title').textContent = name;
-  $('#hero-lede').textContent = `Folded by hand from one sheet of A4. This is the current best design for ${what}.`;
+  $('#hero-lede').textContent = `Every design is folded by hand from one sheet of A4 and tested in simulation, and anyone can help the search from their browser. This is the current best for ${what}.`;
   $('#hero-num').innerHTML = `${fmt(c.robust)}<small>${u === 'm' ? 'm' : 's'}</small>`;
   $('#hero-what').textContent = `Average of its worst 8 out of 16 imperfect throws in simulation. A clean throw gives ${fmt(c.nominal.metric)} ${u}.`;
   $('#hero-compare').innerHTML = `Classic dart, same test <b>${fmt(m.dart.robust)} ${u}</b>`;
@@ -258,7 +266,7 @@ function renderHero(m) {
   g.add(heroPaper.group);
   heroPaper.root = g;
   hero.scene.add(g);
-  hero.camera.position.set(-0.32, 0.2, 0.36);
+  hero.camera.position.set(-0.25, 0.15, 0.28);
   hero.controls.target.set(0, 0, 0);
   hero.tick = (dt) => { if (!reduceMotion) g.rotation.y += dt * 0.25; };
   if (hero.root) hero.scene.remove(hero.root);
