@@ -6,10 +6,23 @@ It takes an A4 sheet of 80 g/m² paper, folds it in a geometric fold engine, com
 
 This repository started five years ago as **Aviato**, a small Python experiment that generated random crease patterns and plotted them (still in the git history). I never had the time to finish it. In 2026 I picked it up again with Claude and finally built what I had in mind: a real fold engine, a physics model checked against wind-tunnel data, a robust search, and a way for anyone to contribute.
 
-<!-- RESULTS -->
+## Current results
+
+| | Bestfold D-1 (distance) | Bestfold H-1 (time aloft) |
+|---|---|---|
+| Score: average of the worst 8 of 16 imperfect throws | **14.2 m** | **5.4 s** |
+| Clean throw | 18.4 m | 5.0 s |
+| Classic dart, same test, best trim | 3.3 m | 3.3 s |
+| Sheet | A4 landscape | A4 portrait |
+| Folds before the body fold | 2 corner folds, nose fold-down | 3 corner folds, nose fold-down |
+| Wingspan / wing area | 11.4 cm / 142 cm² | 19.6 cm / 248 cm² |
+| Throw | 11 m/s, slightly downward | 15 m/s, 58° up, slight bank |
+
+These are simulation results from about 47 000 simulated planes per mission. They have not yet been checked against real throws (see [Validation](#validation)). Folding instructions and printable step diagrams for both planes are in `results/` and on the site.
 
 ## Contents
 
+- [Current results](#current-results)
 - [How it works](#how-it-works)
 - [Physics model](#physics-model)
 - [Limitations](#limitations)
